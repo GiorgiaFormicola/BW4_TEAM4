@@ -20,12 +20,11 @@ public abstract class MezzoDiTrasporto {
     private boolean inServizio;
 
     //COSTRUTTORI
-    public MezzoDiTrasporto() {
+    protected MezzoDiTrasporto() {
     }
 
     protected MezzoDiTrasporto(int capienza) {
         this.capienza = capienza;
-        this.inServizio = true;
     }
 
     //GETTERS
