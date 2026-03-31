@@ -57,10 +57,74 @@ public class EmissioniDAO {
         if (tessera.getDataScadenza().isBefore(LocalDate.now()))
             throw new RuntimeException("Impossibile acquistare l'abbonamento, tessera scaduta il " + tessera.getDataScadenza());
         else {
-            Emissione nuovaAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
-            this.save(nuovaAbbonamento);
+            Emissione nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
+            this.save(nuovoAbbonamento);
         }
     }
+
+    public Abbonamento controllaValiditàAbbonamento(Tessera tessera) {
+        Abbonamento abbonamentoUtente;
+        if (tessera.getDataScadenza().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Tessera utente scaduta");
+        } else {
+            TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setMaxResults(1);
+            List<Abbonamento> found = query.getResultList();
+            if (found.isEmpty()) {
+                throw new RuntimeException("Nessun abbonamento trovato");
+            } else {
+                abbonamentoUtente = found.getFirst();
+                if (abbonamentoUtente.getDataScadenza().isBefore(LocalDate.now())) {
+                    System.out.println("Abbonamento scaduto in data " + abbonamentoUtente.getDataScadenza());
+                } else {
+                    System.out.println("Abbonamento valido. Scadenza prevista in data " + abbonamentoUtente.getDataScadenza());
+                }
+                return abbonamentoUtente;
+            }
+        }
+    }
+
+    public void rinnovaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+        Abbonamento abbonamentoDaRinnovare = this.controllaValiditàAbbonamento(tessera);
+        if (abbonamentoDaRinnovare.getDataScadenza().isAfter(LocalDate.now()))
+            throw new RuntimeException("Impossibile rinnovare l'abbonamento. Abbonamento ancora in corso di validità");
+        else {
+            this.acquistaAbbonamento(puntoEmissione, tessera, abbonamentoDaRinnovare.getTipo());
+        }
+        System.out.println("Abbonamento rinnovato con successo");
+    }
+
+    public void rinnovaEModificaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+        Abbonamento abbonamentoDaModificare = this.controllaValiditàAbbonamento(tessera);
+        if (abbonamentoDaModificare.getDataScadenza().isAfter(LocalDate.now()))
+            throw new RuntimeException("Impossibile modificare l'abbonamento. Abbonamento ancora in corso di validità");
+        else {
+            if (abbonamentoDaModificare.getTipo().equals(TipoAbbonamento.MENSILE))
+                this.acquistaAbbonamento(puntoEmissione, tessera, TipoAbbonamento.SETTIMANALE);
+            else this.acquistaAbbonamento(puntoEmissione, tessera, TipoAbbonamento.MENSILE);
+        }
+        System.out.println("Abbonamento modificato con successo");
+    }
+    
+     /*public void controllaValiditàAbbonamento(Utente utente) {
+        if (utente.getTessera() == null) {
+            throw new RuntimeException("Nessuna tessera associata all'utente");
+        } else if (utente.getTessera().getDataScadenza().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Tessera utente scaduta");
+        } else {
+            TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setMaxResults(1);
+            List<Abbonamento> found = query.getResultList();
+            if (found.isEmpty()) {
+                throw new RuntimeException("Nessun abbonamento trovato");
+            } else {
+                Abbonamento abbonamentoUtente = found.getFirst();
+                if (abbonamentoUtente.getDataScadenza().isBefore(LocalDate.now())) System.out.println("Abbonamento scaduto in data " + abbonamentoUtente.getDataScadenza());
+                else System.out.println("Abbonamento valido. Scadenza prevista in data " +abbonamentoUtente.getDataScadenza());
+            }
+        }
+    }*/
+
 
     public void utilizzaEmissione(Emissione emissione, MezzoDiTrasporto mezzo) {
         if (emissione instanceof Biglietto) { //VIDIMA BIGLIETTO
@@ -285,22 +349,5 @@ public class EmissioniDAO {
         else return found;
     }
 
-    /*public void controllaValiditàAbbonamento(Utente utente) {
-        if (utente.getTessera() == null) {
-            throw new RuntimeException("Nessuna tessera associata all'utente");
-        } else if (utente.getTessera().getDataScadenza().isBefore(LocalDate.now())) {
-            throw new RuntimeException("Tessera utente scaduta");
-        } else {
-            TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
-            query.setMaxResults(1);
-            List<Abbonamento> found = query.getResultList();
-            if (found.isEmpty()) {
-                throw new RuntimeException("Nessun abbonamento trovato");
-            } else {
-                Abbonamento abbonamentoUtente = found.getFirst();
-                if (abbonamentoUtente.getDataScadenza().isBefore(LocalDate.now())) System.out.println("Abbonamento scaduto in data " + abbonamentoUtente.getDataScadenza());
-                else System.out.println("Abbonamento valido. Scadenza prevista in data " +abbonamentoUtente.getDataScadenza());
-            }
-        }
-    }*/
+
 }
