@@ -2,6 +2,7 @@ package GiorgiaFormicola.entities;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -12,7 +13,7 @@ public class Tessera {
     @GeneratedValue
     private UUID id;
 
-    @Column(name = "numero_tessera")
+    @Column(name = "numero_tessera", unique = true)
     private Long numeroTessera;
 
     @Column(name = "data_emissione")
@@ -21,12 +22,15 @@ public class Tessera {
     @Column(name = "data_scadenza")
     private LocalDate dataScadenza;
 
-    @Column(name = "codice_fiscale")
+    @Column(name = "codice_fiscale", unique = true)
     private String codiceFiscale;
 
+//    @OneToMany(mappedBy = "tessera")
+//    private List<>
 
 
-    public Tessera() {
+
+    protected Tessera() {
     }
 
 
@@ -43,5 +47,32 @@ public class Tessera {
 
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Long getNumeroTessera() {
+        return numeroTessera;
+    }
+
+    public LocalDate getDataEmissione() {
+        return dataEmissione;
+    }
+
+    public LocalDate getDataScadenza() {
+        return dataScadenza;
+    }
+
+    @Override
+    public String toString() {
+        return "Tessera{" +
+                "id=" + id +
+                ", numeroTessera=" + numeroTessera +
+                ", dataEmissione=" + dataEmissione +
+                ", dataScadenza=" + dataScadenza +
+                ", codiceFiscale='" + codiceFiscale + '\'' +
+                '}';
     }
 }
