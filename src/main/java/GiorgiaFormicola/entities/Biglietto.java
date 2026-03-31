@@ -17,11 +17,12 @@ public class Biglietto extends Emissione {
     private MezzoDiTrasporto mezzo;
 
     //COSTRUTTORI
-    protected Biglietto() {
+    public Biglietto() {
     }
 
-    public Biglietto(PuntiEmissione puntoEmissione) {
+    protected Biglietto(PuntiEmissione puntoEmissione, MezzoDiTrasporto mezzo) {
         super(puntoEmissione);
+        this.mezzo = mezzo;
     }
 
     //GETTERS

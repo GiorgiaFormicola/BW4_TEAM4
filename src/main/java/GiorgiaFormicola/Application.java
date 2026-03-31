@@ -1,15 +1,15 @@
 package GiorgiaFormicola;
 
-import GiorgiaFormicola.dao.EmissioniDAO;
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
-import GiorgiaFormicola.entities.Emissione;
-import GiorgiaFormicola.entities.MezzoDiTrasporto;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
+import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
@@ -105,30 +105,15 @@ public class Application {
 
 //        puntiEmissioneDAO.deletePuntoEmissioneById(UUID.fromString("75b2777a-2e44-4511-b0a6-400ce0819a13"));
 
-        /*try {
+        try {
             puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             System.out.println(e.getMessage());
-        }*/
+        }
 
-        /* puntiEmissioneDAO.findPuntiEmissioneAttivi();*/
+        puntiEmissioneDAO.findPuntiEmissioneAttivi();
         /* puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));*/
 
-        //TEST DAO Emissioni
-        EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
-
-        /*DistributoriAutomatici distributoreAutomatico = new DistributoriAutomatici(true);
-        RivenditoriAutorizzati rivenditoreAutorizzato = new RivenditoriAutorizzati(true);
-
-        puntiEmissioneDAO.savePuntoEmissione(distributoreAutomatico);
-        puntiEmissioneDAO.savePuntoEmissione(rivenditoreAutorizzato);
-
-        emissioniDAO.acquistaBiglietto(distributoreAutomatico);
-        mezziDAO.addMezzo("autobus");*/
-        
-        Emissione bigliettoFromDB = emissioniDAO.findById("7afe097e-b900-41b0-a57e-64af3b9526e6");
-        MezzoDiTrasporto mezzoFromDB = mezziDAO.findById("76246ff1-f859-4320-a520-97073d7ebea6");
-        emissioniDAO.utilizzaEmissione(bigliettoFromDB, mezzoFromDB);
         System.out.println("Hello World!");
     }
 }
