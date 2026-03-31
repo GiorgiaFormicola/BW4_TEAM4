@@ -6,6 +6,10 @@
         <class>GiorgiaFormicola.entities.PuntiEmissione</class>
         <class>GiorgiaFormicola.entities.DistributoriAutomatici</class>
         <class>GiorgiaFormicola.entities.RivenditoriAutorizzati</class>
+        <class>GiorgiaFormicola.entities.Emissione</class>
+        <class>GiorgiaFormicola.entities.Biglietto</class>
+        <class>GiorgiaFormicola.entities.Abbonamento</class>
+        <class>GiorgiaFormicola.entities.Tessera</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:postgresql://localhost:5432/public_transport_company"/>
