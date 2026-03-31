@@ -54,6 +54,8 @@ public class PuntiEmissioneDAO {
     public void changeStatoPuntiEmissione(UUID id){
         EntityTransaction transaction = entityManager.getTransaction();
 
+//        PuntiEmissione found = this.getPuntoEmissioneById(id);
+
         transaction.begin();
 
         entityManager.createQuery("UPDATE PuntiEmissione d SET d.attivo = NOT d.attivo WHERE d.id = :id")
