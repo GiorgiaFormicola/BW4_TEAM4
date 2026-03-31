@@ -54,17 +54,25 @@ public class PuntiEmissioneDAO {
     public void changeStatoPuntiEmissione(UUID id){
         EntityTransaction transaction = entityManager.getTransaction();
 
-//        PuntiEmissione found = this.getPuntoEmissioneById(id);
+        PuntiEmissione found = this.getPuntoEmissioneById(id);
+
+        if (found == null){
+            throw new NotFoundException(id);
+        }
+
+        boolean statoPrecedente = found.isAttivo();
 
         transaction.begin();
 
-        entityManager.createQuery("UPDATE PuntiEmissione d SET d.attivo = NOT d.attivo WHERE d.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
+//        entityManager.createQuery("UPDATE PuntiEmissione d SET d.attivo = NOT d.attivo WHERE d.id = :id")
+//                .setParameter("id", id)
+//                .executeUpdate();
+
+        found.setAttivo(!statoPrecedente);
 
         transaction.commit();
 
-        System.out.println("Lo stato del distributore automatico con id " + id + " è stato cambiato");
+        System.out.println("Lo stato del punto di emissione con id " + id + " è stato cambiato da " + statoPrecedente + " a " + found.isAttivo());
     }
 
 
