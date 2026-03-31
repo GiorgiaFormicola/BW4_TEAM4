@@ -2,16 +2,13 @@ package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
-import GiorgiaFormicola.dao.TessereDAO;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
-import GiorgiaFormicola.entities.Tessera;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public class Application {
@@ -59,11 +56,11 @@ public class Application {
             System.out.println(e.getMessage());
         }*/
 
-//        try {
-//            mezziDAO.getMezziInManutenzione().forEach(System.out::println);
-//        } catch (RuntimeException e) {
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            mezziDAO.getMezziInManutenzione().forEach(System.out::println);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
 
 
 
@@ -108,30 +105,14 @@ public class Application {
 
 //        puntiEmissioneDAO.deletePuntoEmissioneById(UUID.fromString("75b2777a-2e44-4511-b0a6-400ce0819a13"));
 
-//        try {
-//            puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
-//        } catch (NotFoundException e){
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
+        } catch (NotFoundException e){
+            System.out.println(e.getMessage());
+        }
 
-
-        //TEST DAO PER TESSERE
-        Tessera tessera = new Tessera(10L, LocalDate.of(2026, 03, 20), LocalDate.of(2026, 03, 31), "abc1234");
-
-        TessereDAO tessereDAO = new TessereDAO(entityManager);
-
-//        tessereDAO.saveTessera(tessera);
-
-
-//        try {
-//            tessereDAO.findTesseraById(UUID.fromString("012403ed-c729-4149-994e-03c07753f7b1"));
-//        } catch (NotFoundException e){
-//            System.out.println(e.getMessage());
-//        }
-
-        tessereDAO.deleteTesseraById(UUID.fromString("012403ed-c729-4149-994e-03c07753f7b1"));
-
-
+        puntiEmissioneDAO.findPuntiEmissioneAttivi();
+        /* puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));*/
         System.out.println("Hello World!");
     }
 }
