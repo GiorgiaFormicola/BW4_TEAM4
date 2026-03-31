@@ -37,5 +37,7 @@ public class Application {
         } catch (NotFoundException e){
             System.out.println(e.getMessage());
         }
+
+        puntiEmissioneDAO.findPuntiEmissioneAttivi();
     }
 }
