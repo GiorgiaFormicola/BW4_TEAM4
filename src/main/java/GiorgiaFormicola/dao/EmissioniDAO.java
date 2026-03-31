@@ -207,5 +207,100 @@ public class EmissioniDAO {
         return query.getResultList();
     }
 
+    public List<Emissione> getTotaleEmissioniInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Emissione> query;
+        if (quando.equals("prima")) {
+            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione < :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+        } else if (quando.equals("dopo")) {
+            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione > :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+        } else {
+            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione = :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+        }
+        query.setParameter("data", data);
+        query.setParameter("idPunto", idPunto);
+        List<Emissione> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        else return found;
+    }
 
+    public List<Biglietto> getTotaleBigliettiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Biglietto> query;
+        if (quando.equals("prima")) {
+            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione < :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+        } else if (quando.equals("dopo")) {
+            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione > :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+        } else {
+            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione = :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+        }
+        query.setParameter("data", data);
+        query.setParameter("idPunto", idPunto);
+        List<Biglietto> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public List<Abbonamento> getTotaleAbbonamentiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Abbonamento> query;
+        if (quando.equals("prima")) {
+            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione < :data AND a.puntiEmissione.id = :idPunto ", Abbonamento.class);
+        } else if (quando.equals("dopo")) {
+            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione > :data AND a.puntiEmissione.id = :idPunto", Abbonamento.class);
+        } else {
+            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione = :data AND a.puntiEmissione.id = :idPunto", Abbonamento.class);
+        }
+        query.setParameter("data", data);
+        query.setParameter("idPunto", idPunto);
+        List<Abbonamento> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        else return found;
+    }
+
+    public List<Emissione> getTotaleEmissioniInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Emissione> query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.puntiEmissione.id = :idPunto AND e.dataEmissione BETWEEN :dataInizio AND :dataFine", Emissione.class);
+        query.setParameter("dataInizio", dataInizio);
+        query.setParameter("dataFine", dataFine);
+        query.setParameter("idPunto", idPunto);
+        List<Emissione> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        else return found;
+    }
+
+    public List<Biglietto> getTotaleBigliettiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.puntiEmissione.id = :idPunto AND b.dataEmissione BETWEEN :dataInizio AND :dataFine", Biglietto.class);
+        query.setParameter("dataInizio", dataInizio);
+        query.setParameter("dataFine", dataFine);
+        query.setParameter("idPunto", idPunto);
+        List<Biglietto> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public List<Abbonamento> getTotaleAbbonamentiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.puntiEmissione.id = :idPunto AND a.dataEmissione BETWEEN :dataInizio AND :dataFine", Abbonamento.class);
+        query.setParameter("dataInizio", dataInizio);
+        query.setParameter("dataFine", dataFine);
+        query.setParameter("idPunto", idPunto);
+        List<Abbonamento> found = query.getResultList();
+        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        else return found;
+    }
+
+    /*public void controllaValiditàAbbonamento(Utente utente) {
+        if (utente.getTessera() == null) {
+            throw new RuntimeException("Nessuna tessera associata all'utente");
+        } else if (utente.getTessera().getDataScadenza().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Tessera utente scaduta");
+        } else {
+            TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setMaxResults(1);
+            List<Abbonamento> found = query.getResultList();
+            if (found.isEmpty()) {
+                throw new RuntimeException("Nessun abbonamento trovato");
+            } else {
+                Abbonamento abbonamentoUtente = found.getFirst();
+                if (abbonamentoUtente.getDataScadenza().isBefore(LocalDate.now())) System.out.println("Abbonamento scaduto in data " + abbonamentoUtente.getDataScadenza());
+                else System.out.println("Abbonamento valido. Scadenza prevista in data " +abbonamentoUtente.getDataScadenza());
+            }
+        }
+    }*/
 }
