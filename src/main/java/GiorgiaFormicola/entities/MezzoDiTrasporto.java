@@ -16,9 +16,6 @@ public abstract class MezzoDiTrasporto {
 
     private int capienza;
 
-    @Column(name = "in_servizio")
-    private boolean inServizio;
-
     //COSTRUTTORI
     protected MezzoDiTrasporto() {
     }
@@ -36,25 +33,11 @@ public abstract class MezzoDiTrasporto {
         return capienza;
     }
 
-    public boolean isInServizio() {
-        return inServizio;
-    }
-
-  /*  public void setInServizio() {
-        if (this.inServizio) System.out.println("Mezzo già in servizio.");
-        else this.inServizio = true;
-    }
-
-    public void setInManutezione(){
-        if (!this.inServizio) System.out.println("Mezzo già in manutenzione.");
-        else this.inServizio = false;
-    }*/
 
     //TO STRING
     @Override
     public String toString() {
         return "id=" + id +
-                ", capienza=" + capienza +
-                ", inServizio=" + inServizio;
+                ", capienza=" + capienza;
     }
 }
