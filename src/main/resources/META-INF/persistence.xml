@@ -9,6 +9,9 @@
         <class>GiorgiaFormicola.entities.OperativitàMezzo</class>
         <class>GiorgiaFormicola.entities.Manutenzione</class>
         <class>GiorgiaFormicola.entities.Servizio</class>
+        <class>GiorgiaFormicola.entities.PuntiEmissione</class>
+        <class>GiorgiaFormicola.entities.DistributoriAutomatici</class>
+        <class>GiorgiaFormicola.entities.RivenditoriAutorizzati</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:postgresql://localhost:5432/public_transport_company"/>
