@@ -4,12 +4,9 @@ import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
-import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
