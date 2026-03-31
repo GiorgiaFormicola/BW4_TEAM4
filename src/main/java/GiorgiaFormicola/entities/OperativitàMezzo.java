@@ -8,7 +8,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "operatività_mezzi")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "stato")
+@DiscriminatorColumn(name = "operatività")
 public abstract class OperativitàMezzo {
     //ATTRIBUTI
     @Id

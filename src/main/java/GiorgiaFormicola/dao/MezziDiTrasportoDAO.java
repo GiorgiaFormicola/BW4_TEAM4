@@ -5,6 +5,7 @@ import GiorgiaFormicola.entities.MezzoDiTrasporto;
 import GiorgiaFormicola.entities.Tram;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 
 import java.util.UUID;
 
@@ -49,5 +50,16 @@ public class MezziDiTrasportoDAO {
             throw new RuntimeException("Tipo di mezzo da aggiungere al parco non valido"); //TODO: aggiungi eccezione mezzo non valido
         }
         this.save(nuovoMezzo);
+    }
+
+    public void modificaMezzoIsInServizio(MezzoDiTrasporto mezzo) {
+        Query updateQuery = entityManager.createQuery("UPDATE MezzoDiTrasporto m SET m.inServizio = :boolean WHERE m.id = :idMezzo ");
+        updateQuery.setParameter("boolean", !mezzo.isInServizio());
+        updateQuery.setParameter("idMezzo", mezzo.getId());
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        updateQuery.executeUpdate();
+        transaction.commit();
+        System.out.println("Operatività del mezzo " + mezzo.getId() + "modificata a in " + (mezzo.isInServizio() ? "manutenzione" : "servizio"));
     }
 }

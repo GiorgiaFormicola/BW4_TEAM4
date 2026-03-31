@@ -7,7 +7,9 @@ import GiorgiaFormicola.entities.Servizio;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
+import java.util.List;
 import java.util.UUID;
 
 public class OperativitàMezziDAO {
@@ -41,6 +43,10 @@ public class OperativitàMezziDAO {
         System.out.println(found.getClass().getSimpleName() + " " + idOperatività + " correttamente eliminata dallo storico.");
     }
 
+    public void iniziaPrimoServizio(MezzoDiTrasporto mezzo) {
+        Servizio primoServizio = new Servizio(mezzo);
+    }
+
     public void aggiornaFineUltimaOperatività(MezzoDiTrasporto mezzo) {
         Query updateQuery = entityManager.createQuery("UPDATE OperativitàMezzo o SET o.dataFine = CURRENT_DATE WHERE o.mezzo.id = mezzo.id AND o.dataFine IS NULL ");
         EntityTransaction transaction = entityManager.getTransaction();
@@ -50,12 +56,8 @@ public class OperativitàMezziDAO {
         System.out.println("Data di fine " + (mezzo.isInServizio() ? "servizio" : "manutenzione") + " aggiornata");
     }
 
-    public void iniziaPrimoServizio(MezzoDiTrasporto mezzo) {
-        Servizio primoServizio = new Servizio(mezzo);
-        
-    }
 
-    public void aggiungiOperatività(MezzoDiTrasporto mezzo, String tipo, String descrizione) {
+    /*public void aggiungiOperatività(MezzoDiTrasporto mezzo, String tipo, String descrizione) {
         OperativitàMezzo nuovaOperatività;
         if (!tipo.equals("servizio") && !tipo.equals("manutenzione")) {
             System.out.println(("Tipo di operatività non valida"));
@@ -71,7 +73,37 @@ public class OperativitàMezziDAO {
                 this.save(nuovaOperatività);
             }
         }
+    }*/
 
+    public void aggiungiNuovaOperativitàMezzo(MezzoDiTrasporto mezzo, String tipo, String descrizione) {
+        OperativitàMezzo nuovaOperatività;
+        if (mezzo.isInServizio()) {
+            nuovaOperatività = new Manutenzione(mezzo, descrizione);
+        } else {
+            nuovaOperatività = new Servizio(mezzo);
+        }
+        this.save(nuovaOperatività);
+    }
 
+    public List<Manutenzione> ottieniManutenzioniMezzo(MezzoDiTrasporto mezzo) {
+        TypedQuery<Manutenzione> query = entityManager.createQuery("SELECT m FROM Manutenzione m WHERE m.mezzo.id = :idMezzo", Manutenzione.class);
+        query.setParameter("idMezzo", mezzo.getId());
+        List<Manutenzione> risultato = query.getResultList();
+        if (risultato.isEmpty()) {
+            throw new RuntimeException("Il mezzo " + mezzo.getId() + " non è mai stato in manutenzione");
+        } else {
+            return risultato;
+        }
+    }
+
+    public List<Servizio> ottieniServiziMezzo(MezzoDiTrasporto mezzo) {
+        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.mezzo.id = :idMezzo", Servizio.class);
+        query.setParameter("idMezzo", mezzo.getId());
+        List<Servizio> risultato = query.getResultList();
+        if (risultato.isEmpty()) {
+            throw new RuntimeException("Il mezzo " + mezzo.getId() + " non è mai stato in servizio");
+        } else {
+            return risultato;
+        }
     }
 }
