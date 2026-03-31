@@ -4,9 +4,12 @@ import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
+import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
@@ -102,6 +105,13 @@ public class Application {
 
 //        puntiEmissioneDAO.deletePuntoEmissioneById(UUID.fromString("75b2777a-2e44-4511-b0a6-400ce0819a13"));
 
+        try {
+            puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
+        } catch (NotFoundException e){
+            System.out.println(e.getMessage());
+        }
+
+        puntiEmissioneDAO.findPuntiEmissioneAttivi();
         /* puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));*/
         System.out.println("Hello World!");
     }
