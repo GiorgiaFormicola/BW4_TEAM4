@@ -44,4 +44,8 @@ public class Tessera {
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
     }
+
+    public LocalDate getDataScadenza() {
+        return dataScadenza;
+    }
 }

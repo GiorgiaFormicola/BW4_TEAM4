@@ -2,6 +2,7 @@ package GiorgiaFormicola.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,6 +16,10 @@ public abstract class MezzoDiTrasporto {
     private UUID id;
 
     private int capienza;
+
+    //RELAZIONE CON BIGLIETTI
+    @OneToMany(mappedBy = "mezzo")
+    private List<Biglietto> bigliettiValidati;
 
     //COSTRUTTORI
     protected MezzoDiTrasporto() {
@@ -33,6 +38,10 @@ public abstract class MezzoDiTrasporto {
         return capienza;
     }
 
+    public List<Biglietto> getBigliettiValidati() {
+        return bigliettiValidati;
+    }
+
     //TO STRING
     @Override
     public String toString() {
@@ -40,3 +49,4 @@ public abstract class MezzoDiTrasporto {
                 ", capienza=" + capienza;
     }
 }
+
