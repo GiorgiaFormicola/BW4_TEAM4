@@ -1,0 +1,48 @@
+package GiorgiaFormicola.entities;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "biglietti")
+public class Biglietto extends Emissione {
+    //ATTRIBUTI
+    @Column(name = "data_vidimazione")
+    private LocalDate dataVidimazione;
+
+    //RELAZIONE CON MEZZO
+    @ManyToOne
+    @JoinColumn(name = "id_mezzo")
+    private MezzoDiTrasporto mezzo;
+
+    //COSTRUTTORI
+    public Biglietto() {
+    }
+
+    protected Biglietto(PuntiEmissione puntoEmissione, MezzoDiTrasporto mezzo) {
+        super(puntoEmissione);
+        this.mezzo = mezzo;
+    }
+
+    //GETTERS
+
+    public LocalDate getDataVidimazione() {
+        return dataVidimazione;
+    }
+
+    public MezzoDiTrasporto getMezzo() {
+        return mezzo;
+    }
+
+    //TO STRING
+
+    @Override
+    public String toString() {
+        return "Biglietto {" +
+                super.toString() +
+                ", dataVidimazione=" + dataVidimazione +
+                ", mezzo=" + mezzo +
+                '}';
+    }
+}

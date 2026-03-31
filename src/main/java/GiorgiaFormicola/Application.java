@@ -53,11 +53,11 @@ public class Application {
             System.out.println(e.getMessage());
         }*/
 
-        try {
+        /*try {
             mezziDAO.getMezziInManutenzione().forEach(System.out::println);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
 
 
 

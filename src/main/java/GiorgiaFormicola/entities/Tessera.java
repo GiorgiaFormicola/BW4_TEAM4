@@ -1,4 +1,7 @@
+package GiorgiaFormicola.entities;
+
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -21,7 +24,6 @@ public class Tessera {
 
     @Column(name = "codice_fiscale")
     private String codiceFiscale;
-
 
 
     public Tessera() {
