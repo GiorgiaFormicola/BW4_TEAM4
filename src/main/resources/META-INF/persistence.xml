@@ -3,12 +3,6 @@
              xmlns="http://xmlns.jcp.org/xml/ns/persistence"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
     <persistence-unit name="public_transport_company_pu">
-        <class>GiorgiaFormicola.entities.MezzoDiTrasporto</class>
-        <class>GiorgiaFormicola.entities.Autobus</class>
-        <class>GiorgiaFormicola.entities.Tram</class>
-        <class>GiorgiaFormicola.entities.OperativitàMezzo</class>
-        <class>GiorgiaFormicola.entities.Manutenzione</class>
-        <class>GiorgiaFormicola.entities.Servizio</class>
         <class>GiorgiaFormicola.entities.PuntiEmissione</class>
         <class>GiorgiaFormicola.entities.DistributoriAutomatici</class>
         <class>GiorgiaFormicola.entities.RivenditoriAutorizzati</class>
