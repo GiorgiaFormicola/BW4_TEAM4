@@ -20,12 +20,12 @@ public class Utente {
     @Column(name = "codice_fiscale", unique = true, nullable = false)
     private String codiceFiscale;
 
-
     @OneToOne(mappedBy = "utente")
     private Tessera tessera;
 
     // costruttore
-    public Utente() {}
+    public Utente() {
+    }
 
     public Utente(TipoDiUtente tipo, String codiceFiscale) {
         this.tipo = tipo;
@@ -33,15 +33,33 @@ public class Utente {
     }
 
     // getter e setter
-    public UUID getId() { return id; }
-    public TipoDiUtente getTipo() { return tipo; }
-    public void setTipo(TipoDiUtente tipo) { this.tipo = tipo; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getCodiceFiscale() { return codiceFiscale; }
-    public void setCodiceFiscale(String codiceFiscale) { this.codiceFiscale = codiceFiscale; }
+    public TipoDiUtente getTipo() {
+        return tipo;
+    }
 
-    public Tessera getTessera() { return tessera; }
-    public void setTessera(Tessera tessera) { this.tessera = tessera; }
+    public void setTipo(TipoDiUtente tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getCodiceFiscale() {
+        return codiceFiscale;
+    }
+
+    public void setCodiceFiscale(String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
+    }
+
+    public Tessera getTessera() {
+        return tessera;
+    }
+
+    public void setTessera(Tessera tessera) {
+        this.tessera = tessera;
+    }
 
     @Override
     public String toString() {

@@ -4,7 +4,9 @@ import GiorgiaFormicola.entities.PuntiEmissione;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
 
+import java.util.List;
 import java.util.UUID;
 
 public class PuntiEmissioneDAO {
@@ -54,15 +56,36 @@ public class PuntiEmissioneDAO {
     public void changeStatoPuntiEmissione(UUID id){
         EntityTransaction transaction = entityManager.getTransaction();
 
+        PuntiEmissione found = this.getPuntoEmissioneById(id);
+
+        if (found == null){
+            throw new NotFoundException(id);
+        }
+
+        boolean statoPrecedente = found.isAttivo();
+
         transaction.begin();
 
-        entityManager.createQuery("UPDATE PuntiEmissione d SET d.attivo = NOT d.attivo WHERE d.id = :id")
-                .setParameter("id", id)
-                .executeUpdate();
+        found.setAttivo(!statoPrecedente);
 
         transaction.commit();
 
-        System.out.println("Lo stato del distributore automatico con id " + id + " è stato cambiato");
+        System.out.println("Lo stato del punto di emissione con id " + id + " è stato cambiato da " + statoPrecedente + " a " + found.isAttivo());
+    }
+
+    public List<PuntiEmissione> findPuntiEmissioneAttivi(){
+        TypedQuery<PuntiEmissione> query = entityManager.createQuery("SELECT p FROM PuntiEmissione p WHERE p.attivo = true", PuntiEmissione.class);
+
+        List<PuntiEmissione> listaPuntiEmissioneAttivi = query.getResultList();
+
+        if (listaPuntiEmissioneAttivi.isEmpty()){
+            System.out.println("Nessun punto di emissione trovato");
+        } else {
+            System.out.println("Lista dei punti di emissione attivi: ");
+            listaPuntiEmissioneAttivi.forEach(System.out::println);
+        }
+
+        return listaPuntiEmissioneAttivi;
     }
 
 

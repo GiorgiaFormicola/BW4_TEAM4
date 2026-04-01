@@ -1,16 +1,17 @@
 package GiorgiaFormicola.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("distributori_automatici")
-public class DistributoriAutomatici extends PuntiEmissione{
+public class DistributoriAutomatici extends PuntiEmissione {
 
-    protected DistributoriAutomatici(){
+    protected DistributoriAutomatici() {
 
     }
 
-    public DistributoriAutomatici(boolean attivo){
+    public DistributoriAutomatici(boolean attivo) {
         super(attivo);
     }
 
