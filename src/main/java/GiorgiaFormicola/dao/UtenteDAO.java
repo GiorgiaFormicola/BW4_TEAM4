@@ -2,6 +2,7 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Utente;
 import GiorgiaFormicola.exceptions.UtenteGiàPresenteNelDBException;
+import GiorgiaFormicola.exceptions.UtenteNonTrovatoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -35,13 +36,22 @@ public class UtenteDAO {
 
 //    recupero dell utente tramite codice fiscal
 
-    public Utente findByCodiceFiscale(String cf) {
+    /*public Utente findByCodiceFiscale(String cf) {
         try {
             return em.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :cf", Utente.class)
                     .setParameter("cf", cf)
                     .getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }*/
+    public Utente findByCodiceFiscale(String cf) {
+        try {
+            return em.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :cf", Utente.class)
+                    .setParameter("cf", cf)
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new UtenteNonTrovatoException();
         }
     }
 

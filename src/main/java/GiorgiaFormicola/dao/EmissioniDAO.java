@@ -145,6 +145,38 @@ public class EmissioniDAO {
         }
         System.out.println("Abbonamento modificato e rinnovato con successo!");
     }
+
+    public void utilizzaAbbonamento(Tessera tessera, MezzoDiTrasporto mezzo) {
+        Abbonamento abbonamentoDaUtilizzare = this.ottieniUltimoAbbonamentoInBaseATessera(tessera);
+        if (abbonamentoDaUtilizzare.getDataScadenza().isBefore(LocalDate.now()))
+            throw new AbbonamentoScadutoException();
+        else System.out.println("\nAbbonamento valido, salire a bordo");
+    }
+
+    public Biglietto findBigliettoById(String idBiglietto) {
+        Biglietto found = entityManager.find(Biglietto.class, UUID.fromString(idBiglietto));
+        if (found == null)
+            throw new NotFoundException(idBiglietto);
+        else return found;
+    }
+
+
+    public void utilizzaBiglietto(Biglietto biglietto, MezzoDiTrasporto mezzo) {
+        if (biglietto.getDataVidimazione() != null)
+            throw new BigliettoGiàVidimatoException();
+        if (mezzo.getBigliettiValidati().size() == mezzo.getCapienza())
+            throw new CapienzaMassimaRaggiuntaException();
+        else {
+            Query updateQuery = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = CURRENT_DATE, b.mezzo = :mezzo  WHERE b.id = :idBiglietto ");
+            updateQuery.setParameter("mezzo", mezzo);
+            updateQuery.setParameter("idBiglietto", biglietto.getId());
+            EntityTransaction transaction = entityManager.getTransaction();
+            transaction.begin();
+            updateQuery.executeUpdate();
+            transaction.commit();
+            System.out.println("\nBiglietto vidimato con successo, salire a bordo!");
+        }
+    }
     
      /*public boolean controllaValiditàAbbonamento(Utente utente) {
         if (utente.getTessera() == null) {
@@ -170,33 +202,6 @@ public class EmissioniDAO {
         }
     }*/
 
-
-    public void utilizzaEmissione(Emissione emissione, MezzoDiTrasporto mezzo) {
-        if (emissione instanceof Biglietto) { //VIDIMA BIGLIETTO
-            Biglietto biglietto = (Biglietto) emissione;
-            if (biglietto.getDataVidimazione() != null)
-                throw new BigliettoGiàVidimatoException();
-            if (mezzo.getBigliettiValidati().size() == mezzo.getCapienza())
-                throw new CapienzaMassimaRaggiuntaException();
-            else {
-                Query updateQuery = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = CURRENT_DATE, b.mezzo = :mezzo  WHERE b.id = :idBiglietto ");
-                updateQuery.setParameter("mezzo", mezzo);
-                updateQuery.setParameter("idBiglietto", biglietto.getId());
-                EntityTransaction transaction = entityManager.getTransaction();
-                transaction.begin();
-                updateQuery.executeUpdate();
-                transaction.commit();
-                System.out.println("\nBiglietto vidimato con successo, salire a bordo!");
-            }
-        } else { //UTILIZZA ABBONAMENTO
-            Abbonamento abbonamento = (Abbonamento) emissione;
-            if (abbonamento.getTessera().getDataScadenza().isBefore(LocalDate.now()))
-                throw new RuntimeException("Impossibile utilizzare l'abbonamento, tessera scaduta il " + abbonamento.getTessera().getDataScadenza());
-            if (abbonamento.getDataScadenza().isBefore(LocalDate.now()))
-                throw new RuntimeException("Impossibile utilizzare l'abbonamento, abbonamento scaduto il" + abbonamento.getDataScadenza());
-            else System.out.println("\nAbbonamento valido, salire a bordo");
-        }
-    }
 
     public Long getTotaleEmissioniInBaseAData(LocalDate data, String quando) {
         TypedQuery<Long> query;

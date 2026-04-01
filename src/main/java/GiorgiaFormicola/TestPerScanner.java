@@ -4,7 +4,7 @@ import GiorgiaFormicola.dao.EmissioniDAO;
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.dao.UtenteDAO;
-import GiorgiaFormicola.entities.Emissione;
+import GiorgiaFormicola.entities.Biglietto;
 import GiorgiaFormicola.entities.MezzoDiTrasporto;
 import GiorgiaFormicola.entities.PuntiEmissione;
 import GiorgiaFormicola.entities.Utente;
@@ -135,9 +135,9 @@ public class TestPerScanner {
                             mezziDAO.controllaSeInServizio(mezzo);
                             System.out.println("\nInserire l'id del biglietto da vidimare");
                             String idBiglietto = scanner.nextLine();
-                            Emissione biglietto;
-                            biglietto = emissioniDAO.findById(idBiglietto);
-                            emissioniDAO.utilizzaEmissione(biglietto, mezzo);
+                            Biglietto biglietto;
+                            biglietto = emissioniDAO.findBigliettoById(idBiglietto);
+                            emissioniDAO.utilizzaBiglietto(biglietto, mezzo);
                         } catch (
                                 NotFoundException |
                                 IllegalArgumentException |
@@ -244,11 +244,13 @@ public class TestPerScanner {
         }*/
 
         //GESTIONE MEZZO DI TRASPORTO E UTENTE
+        //TODO: test
+        //TODO: getTesseraByNumeroTessera
         /*if (interazione == 2 && simulazione == 2) {
             while (true) {
                 int operazione;
                 System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
-                System.out.println("1.VIDIMA BIGLIETTO");
+                System.out.println("1.UTILIZZA ABBONAMENTO");
                 System.out.println("0.ESCI DALLA SIMULAZIONE");
                 try {
                     operazione = Integer.parseInt(scanner.nextLine());
@@ -262,17 +264,17 @@ public class TestPerScanner {
                         try {
                             mezzo = mezziDAO.findById(idMezzo);
                             mezziDAO.controllaSeInServizio(mezzo);
-                            System.out.println("\nInserire l'id del biglietto da vidimare");
-                            String idBiglietto = scanner.nextLine();
-                            Emissione biglietto;
-                            biglietto = emissioniDAO.findById(idBiglietto);
-                            emissioniDAO.utilizzaEmissione(biglietto, mezzo);
+                            System.out.println("\nInserire il proprio numero di tessera");
+                            String numeroTessera = scanner.nextLine();
+                            *//*tessera = tessereDAO.getTesseraByNumeroTessera(numeroTessera);*//* //TODO
+         *//*emissioniDAO.utilizzaAbbonamento(tessera, mezzo);*//*
                         } catch (
                                 NotFoundException |
                                 IllegalArgumentException |
                                 MezzoNonInServizioException |
-                                BigliettoGiàVidimatoException |
-                                CapienzaMassimaRaggiuntaException e) {
+                                TesseraScadutaException |
+                                AbbonamentoTesseraNonTrovatoException |
+                                AbbonamentoScadutoException e) {
                             if (e instanceof IllegalArgumentException)
                                 System.err.println("\nERRORE: Formato ID non valido\n");
                             else System.err.println("\nERRORE:" + e.getMessage() + "\n");
@@ -285,31 +287,43 @@ public class TestPerScanner {
         }*/
 
         //GESTIONE PORTALE E UTENTE
-        /*if (interazione == 2 && simulazione == 3) {
+        if (interazione == 2 && simulazione == 3) {
             while (true) {
-                int operazione;
-                System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
-                System.out.println("1.REGISTRATI AL PORTALE");
-                System.out.println("0.ESCI DALLA SIMULAZIONE");
+                System.out.println("\nPer accedere al portale inserire il proprio codice fiscale");
+                String codiceFiscale = scanner.nextLine();
                 try {
+                    Utente utente = utentiDAO.findByCodiceFiscale(codiceFiscale);
+                    int operazione;
+                    System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                    System.out.println("1.CREA TESSERA");
+                    System.out.println("2.RINNOVA TESSERA");
+                    System.out.println("3.CONTROLLA VALIDITA' TESSERA");
+                    System.out.println("4.CONTROLLA VALIDITA' ABBONAMENTO");
+                    System.out.println("0.ESCI DALLA SIMULAZIONE");
                     operazione = Integer.parseInt(scanner.nextLine());
                     if (operazione == 0) break;
-                    if (operazione != 1)
+                    if (operazione < 1 || operazione > 4)
                         System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     else {
-                        System.out.println("\nInserire il proprio codice fiscale");
-                        String codiceFiscale = scanner.nextLine();
-                        Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, codiceFiscale);
-                        try {
-                            utentiDAO.save(utente);
-                        } catch (UtenteGiàPresenteNelDBException e) {
-                            System.err.println("ERRORE: " + e.getMessage());
+                        if (operazione == 1) {
+                            //CREAZIONE NUOVA TESSERA (NUMERO SERIALE E PASSA UTENTE, CHECK SE CODICE FISCALE GIA ASSOCIATO A TESSERA
+                        } else if (operazione == 2) {
+                            //TROVA TESSERA IN BASE A UTENTE
+                            //RINNOVA TESSERA (PASSA TESSERA, SE NO SCADUTA ECCEZIONE SE NO UPDATE DATA SCADENZA PIù UN ANNO DA ORA)
+                        } else if (operazione == 3) {
+                            //TROVA TESSERA IN BASE A UTENTE
+                            //CONTROLLA VALIDITA' TESSERA (PASSA TESSERA, STAMPA SE SCADUTA O MENO)
+                        } else {
+                            //TROVA TESSERA IN BASE A UTENTE
+                            /*emissioniDAO.controllaValiditàAbbonamento(tessera);*/
                         }
                     }
-                } catch (NumberFormatException e) {
-                    System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                } catch (UtenteNonTrovatoException | NumberFormatException e) {
+                    if (e instanceof NumberFormatException)
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                    else System.err.println("ERRORE: " + e.getMessage());
                 }
             }
-        }*/
+        }
     }
 }
