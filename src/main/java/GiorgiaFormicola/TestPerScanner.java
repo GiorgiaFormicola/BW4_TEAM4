@@ -4,13 +4,15 @@ import GiorgiaFormicola.dao.EmissioniDAO;
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.dao.UtenteDAO;
-import GiorgiaFormicola.entities.*;
+import GiorgiaFormicola.entities.Emissione;
+import GiorgiaFormicola.entities.MezzoDiTrasporto;
+import GiorgiaFormicola.entities.PuntiEmissione;
+import GiorgiaFormicola.entities.Utente;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.hibernate.dialect.temptable.TemporaryTableSessionUidColumn;
 
 import java.util.Scanner;
 
@@ -22,7 +24,7 @@ public class TestPerScanner {
     private static final PuntiEmissioneDAO puntiDAO = new PuntiEmissioneDAO(entityManager);
     private static final MezziDiTrasportoDAO mezziDAO = new MezziDiTrasportoDAO(entityManager);
     private static final UtenteDAO utentiDAO = new UtenteDAO(entityManager);
-    private static final TesseraDAO tessereDAO = new TesseraDAO(entityManager);
+    /*private static final TesseraDAO tessereDAO = new TesseraDAO(entityManager);*/  //TODO
 
     public static void main(String[] args) {
         //SCEGLIERE TIPO DI SIMULAZIONE
@@ -184,11 +186,13 @@ public class TestPerScanner {
         }
 
         //GESTIONE PUNTO DI EMISSIONE E UTENTE
-        if (interazione == 2 && simulazione == 1) {
+        //TODO: test
+        //TODO: getTesseraByNumeroTessera
+        /*if (interazione == 2 && simulazione == 1) {
             while (true) {
                 int operazione;
                 System.out.println("SCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
-                System.out.println("1.ACQUISTA BIGLIETTO");
+                System.out.println("1.ACQUISTA ABBONAMENTO");
                 System.out.println("2.RINNOVA ABBONAMENTO");
                 System.out.println("3.MODIFICA E RINNOVA ABBONAMENTO");
                 System.out.println("0.ESCI DALLA SIMULAZIONE");
@@ -198,19 +202,36 @@ public class TestPerScanner {
                     if (operazione < 1 || operazione > 3)
                         System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     else {
-                        System.out.println("\nInserire l'id del punto di emissione in cui ti trovi per acquistare un abbonamento");
+                        System.out.println("\nInserire l'id del punto di emissione in cui ti trovi");
                         String idPuntoEmissione = scanner.nextLine();
                         PuntiEmissione puntoEmissione;
                         Tessera tessera;
                         try {
                             puntoEmissione = puntiDAO.getPuntoEmissioneById(idPuntoEmissione);
-                            tessera =
-
-
-                            if(operazione == 1){
-
+                            System.out.println("\nInserire il proprio numero di tessera");
+                            String numeroTessera = scanner.nextLine();
+                            *//*tessera = tessereDAO.getTesseraByNumeroTessera(numeroTessera);*//* //TODO
+                            if (operazione == 1) {
+                                System.out.println("\nScegliere il tipo di abbonamento");
+                                System.out.println("1.SETTIMANALE");
+                                System.out.println("2.MENSILE");
+                                int abbonamento = Integer.parseInt(scanner.nextLine());
+                                if (abbonamento < 1 || abbonamento > 2)
+                                    System.err.println("\nERRORE: Tipo di abbonamento selezionato non valido, riprovare!\n");
+                                else {
+                                    TipoAbbonamento tipoAbbonamento;
+                                    if (abbonamento == 1) tipoAbbonamento = TipoAbbonamento.SETTIMANALE;
+                                    else tipoAbbonamento = TipoAbbonamento.MENSILE;
+                                    *//*emissioniDAO.acquistaAbbonamento(puntoEmissione, tessera, tipoAbbonamento);*//* //TODO
+                                }
+                            } else if (operazione == 2) {
+                                *//*emissioniDAO.rinnovaAbbonamento(puntoEmissione, tessera);*//*
+                            } else {
+                                *//*emissioniDAO.rinnovaEModificaAbbonamento(puntoEmissione, tessera);*//*
                             }
-                        } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivoException e) {
+                        } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivoException |
+                                 TesseraScadutaException | AbbonamentoTesseraNonTrovatoException |
+                                 AbbonamentoAncoraValidoException e) {
                             if (e instanceof IllegalArgumentException)
                                 System.err.println("\nERRORE: Formato ID non valido\n");
                             else System.err.println("\nERRORE:" + e.getMessage() + "\n");
@@ -219,9 +240,8 @@ public class TestPerScanner {
                 } catch (NumberFormatException e) {
                     System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
                 }
-
             }
-        }
+        }*/
 
         //GESTIONE MEZZO DI TRASPORTO E UTENTE
         /*if (interazione == 2 && simulazione == 2) {
