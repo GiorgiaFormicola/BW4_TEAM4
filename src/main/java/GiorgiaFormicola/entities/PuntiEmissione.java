@@ -18,11 +18,10 @@ public abstract class PuntiEmissione {
     @Column(name = "attivo")
     private boolean attivo;
 
-    protected PuntiEmissione(){
-
+    protected PuntiEmissione() {
     }
 
-    public PuntiEmissione(boolean attivo){
+    public PuntiEmissione(boolean attivo) {
         this.attivo = attivo;
     }
 
