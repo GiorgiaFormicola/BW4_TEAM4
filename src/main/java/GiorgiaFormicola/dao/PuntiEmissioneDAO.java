@@ -17,7 +17,7 @@ public class PuntiEmissioneDAO {
         this.entityManager = entityManager;
     }
 
-    public void savePuntoEmissione(PuntiEmissione nuovoPuntoEmissione){
+    public void savePuntoEmissione(PuntiEmissione nuovoPuntoEmissione) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         transaction.begin();
@@ -29,17 +29,17 @@ public class PuntiEmissioneDAO {
         System.out.println("Il punto emissione con id " + nuovoPuntoEmissione.getId() + " è stato creato");
     }
 
-    public PuntiEmissione getPuntoEmissioneById(UUID puntoEmissioneId){
-        PuntiEmissione found = entityManager.find(PuntiEmissione.class, puntoEmissioneId);
-        if (found == null){
+    public PuntiEmissione getPuntoEmissioneById(String puntoEmissioneId) {
+        PuntiEmissione found = entityManager.find(PuntiEmissione.class, UUID.fromString(puntoEmissioneId));
+        if (found == null) {
             throw new NotFoundException(puntoEmissioneId);
         } else {
-            System.out.println("Il punto di emissione con id: " + puntoEmissioneId + " è stato trovato");
+            /* System.out.println("Il punto di emissione con id: " + puntoEmissioneId + " è stato trovato");*/
             return found;
         }
     }
 
-    public void deletePuntoEmissioneById(UUID puntoEmissioneId){
+    public void deletePuntoEmissioneById(String puntoEmissioneId) {
         PuntiEmissione found = this.getPuntoEmissioneById(puntoEmissioneId);
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -53,12 +53,12 @@ public class PuntiEmissioneDAO {
         System.out.println("Il punto di emissione con id " + puntoEmissioneId + " è stato cancellato");
     }
 
-    public void changeStatoPuntiEmissione(UUID id){
+    public void changeStatoPuntiEmissione(String id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         PuntiEmissione found = this.getPuntoEmissioneById(id);
 
-        if (found == null){
+        if (found == null) {
             throw new NotFoundException(id);
         }
 
@@ -73,12 +73,12 @@ public class PuntiEmissioneDAO {
         System.out.println("Lo stato del punto di emissione con id " + id + " è stato cambiato da " + statoPrecedente + " a " + found.isAttivo());
     }
 
-    public List<PuntiEmissione> findPuntiEmissioneAttivi(){
+    public List<PuntiEmissione> findPuntiEmissioneAttivi() {
         TypedQuery<PuntiEmissione> query = entityManager.createQuery("SELECT p FROM PuntiEmissione p WHERE p.attivo = true", PuntiEmissione.class);
 
         List<PuntiEmissione> listaPuntiEmissioneAttivi = query.getResultList();
 
-        if (listaPuntiEmissioneAttivi.isEmpty()){
+        if (listaPuntiEmissioneAttivi.isEmpty()) {
             System.out.println("Nessun punto di emissione trovato");
         } else {
             System.out.println("Lista dei punti di emissione attivi: ");

@@ -2,6 +2,7 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.*;
 import GiorgiaFormicola.enums.TipoAbbonamento;
+import GiorgiaFormicola.exceptions.PuntoDiEmissioneNonAttivo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -23,7 +24,6 @@ public class EmissioniDAO {
         transaction.begin();
         entityManager.persist(nuovaEmissione);
         transaction.commit();
-        System.out.println((nuovaEmissione instanceof Biglietto ? "Biglietto" : "Abbonamento") + " acquistato con successo");
     }
 
     public Emissione findById(String idEmissione) {
@@ -44,10 +44,11 @@ public class EmissioniDAO {
 
     public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
         if (!puntoEmissione.isAttivo())
-            throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+            throw new PuntoDiEmissioneNonAttivo();
         else {
             Emissione nuovaBiglietto = new Biglietto(puntoEmissione);
             this.save(nuovaBiglietto);
+            System.out.println("\nBiglietto acquistato con successo!\n");
         }
     }
 
@@ -153,76 +154,76 @@ public class EmissioniDAO {
         }
     }
 
-    public List<Emissione> getTotaleEmissioniInBaseAData(LocalDate data, String quando) {
-        TypedQuery<Emissione> query;
+    public Long getTotaleEmissioniInBaseAData(LocalDate data, String quando) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione < :data ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione < :data ", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione > :data ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione > :data ", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione = :data ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione = :data ", Long.class);
         }
         query.setParameter("data", data);
-        List<Emissione> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessuna emissione trovata");
         else return found;
     }
 
 
-    public List<Biglietto> getTotaleBigliettiInBaseAData(LocalDate data, String quando) {
-        TypedQuery<Biglietto> query;
+    public Long getTotaleBigliettiInBaseAData(LocalDate data, String quando) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione < :data ", Biglietto.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione < :data ", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione > :data ", Biglietto.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione > :data ", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione = :data ", Biglietto.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione = :data ", Long.class);
         }
         query.setParameter("data", data);
-        List<Biglietto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
         else return found;
     }
 
-    public List<Abbonamento> getTotaleAbbonamentiInBaseAData(LocalDate data, String quando) {
-        TypedQuery<Abbonamento> query;
+    public Long getTotaleAbbonamentiInBaseAData(LocalDate data, String quando) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione < :data ", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione < :data ", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione > :data ", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione > :data ", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione = :data ", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione = :data ", Long.class);
         }
         query.setParameter("data", data);
-        List<Abbonamento> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun abbonamento trovato");
         else return found;
     }
 
-    public List<Emissione> getTotaleEmissioniInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
-        TypedQuery<Emissione> query = entityManager.createQuery("SELECT e FROM Emissione e WHERE  e.dataEmissione BETWEEN :dataInizio AND :dataFine", Emissione.class);
+    public Long getTotaleEmissioniInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE  e.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
-        List<Emissione> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessuna emissione trovata");
         else return found;
     }
 
-    public List<Biglietto> getTotaleBigliettiInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
-        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione BETWEEN :dataInizio AND :dataFine", Biglietto.class);
+    public Long getTotaleBigliettiInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
-        List<Biglietto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
         else return found;
     }
 
-    public List<Abbonamento> getTotaleAbbonamentiInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
-        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione BETWEEN :dataInizio AND :dataFine", Abbonamento.class);
+    public Long getTotaleAbbonamentiInArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
-        List<Abbonamento> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun abbonamento trovato");
         else return found;
     }
 
@@ -247,107 +248,185 @@ public class EmissioniDAO {
         return query.getResultList();
     }
 
-    public List<Emissione> getTotaleEmissioniDaPuntoDiEmissione(String idPunto) {
-        TypedQuery<Emissione> query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.puntiEmissione.id = :idPunto", Emissione.class);
+    public Long getTotaleEmissioniDaPuntoDiEmissione(String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.puntiEmissione.id = :idPunto", Long.class);
         query.setParameter("idPunto", UUID.fromString(idPunto));
-        List<Emissione> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
-        return query.getResultList();
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessuna emissione trovata");
+        return found;
     }
 
-    public List<Biglietto> getTotaleBigliettiDaPuntoDiEmissione(String idPunto) {
-        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.puntiEmissione.id = :idPunto", Biglietto.class);
+    public Long getTotaleBigliettiDaPuntoDiEmissione(String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.puntiEmissione.id = :idPunto", Long.class);
         query.setParameter("idPunto", UUID.fromString(idPunto));
-        List<Biglietto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
-        return query.getResultList();
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        return found;
     }
 
-    public List<Abbonamento> getTotaleAbbonamentiDaPuntoDiEmissione(String idPunto) {
-        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.puntiEmissione.id = :idPunto", Abbonamento.class);
+    public Long getTotaleAbbonamentiDaPuntoDiEmissione(String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.puntiEmissione.id = :idPunto", Long.class);
         query.setParameter("idPunto", UUID.fromString(idPunto));
-        List<Abbonamento> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
-        return query.getResultList();
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun abbonamento trovato");
+        return found;
     }
 
-    public List<Emissione> getTotaleEmissioniInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
-        TypedQuery<Emissione> query;
+    public Long getTotaleEmissioniInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione < :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione < :data AND e.puntiEmissione.id = :idPunto ", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione > :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione > :data AND e.puntiEmissione.id = :idPunto ", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.dataEmissione = :data AND e.puntiEmissione.id = :idPunto ", Emissione.class);
+            query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.dataEmissione = :data AND e.puntiEmissione.id = :idPunto ", Long.class);
         }
         query.setParameter("data", data);
         query.setParameter("idPunto", idPunto);
-        List<Emissione> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessuna emissione trovata");
         else return found;
     }
 
-    public List<Biglietto> getTotaleBigliettiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
-        TypedQuery<Biglietto> query;
+    public Long getTotaleBigliettiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione < :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione < :data AND b.puntiEmissione.id = :idPunto", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione > :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+            query = entityManager.createQuery("SELECT bCOUNT(b) FROM Biglietto b WHERE b.dataEmissione > :data AND b.puntiEmissione.id = :idPunto", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.dataEmissione = :data AND b.puntiEmissione.id = :idPunto", Biglietto.class);
+            query = entityManager.createQuery("SELECT bCOUNT(b) FROM Biglietto b WHERE b.dataEmissione = :data AND b.puntiEmissione.id = :idPunto", Long.class);
         }
         query.setParameter("data", data);
         query.setParameter("idPunto", idPunto);
-        List<Biglietto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
         else return found;
     }
 
-    public List<Abbonamento> getTotaleAbbonamentiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
-        TypedQuery<Abbonamento> query;
+    public Long getTotaleAbbonamentiInBaseADataDaPuntoDiEmissione(LocalDate data, String quando, String idPunto) {
+        TypedQuery<Long> query;
         if (quando.equals("prima")) {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione < :data AND a.puntiEmissione.id = :idPunto ", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione < :data AND a.puntiEmissione.id = :idPunto ", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione > :data AND a.puntiEmissione.id = :idPunto", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione > :data AND a.puntiEmissione.id = :idPunto", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.dataEmissione = :data AND a.puntiEmissione.id = :idPunto", Abbonamento.class);
+            query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.dataEmissione = :data AND a.puntiEmissione.id = :idPunto", Long.class);
         }
         query.setParameter("data", data);
         query.setParameter("idPunto", idPunto);
-        List<Abbonamento> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun abbonamento trovato");
         else return found;
     }
 
-    public List<Emissione> getTotaleEmissioniInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
-        TypedQuery<Emissione> query = entityManager.createQuery("SELECT e FROM Emissione e WHERE e.puntiEmissione.id = :idPunto AND e.dataEmissione BETWEEN :dataInizio AND :dataFine", Emissione.class);
+    public Long getTotaleEmissioniInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(e) FROM Emissione e WHERE e.puntiEmissione.id = :idPunto AND e.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
         query.setParameter("idPunto", idPunto);
-        List<Emissione> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessuna emissione trovata");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessuna emissione trovata");
         else return found;
     }
 
-    public List<Biglietto> getTotaleBigliettiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
-        TypedQuery<Biglietto> query = entityManager.createQuery("SELECT b FROM Biglietto b WHERE b.puntiEmissione.id = :idPunto AND b.dataEmissione BETWEEN :dataInizio AND :dataFine", Biglietto.class);
+    public Long getTotaleBigliettiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.puntiEmissione.id = :idPunto AND b.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
         query.setParameter("idPunto", idPunto);
-        List<Biglietto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun biglietto trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
         else return found;
     }
 
-    public List<Abbonamento> getTotaleAbbonamentiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
-        TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.puntiEmissione.id = :idPunto AND a.dataEmissione BETWEEN :dataInizio AND :dataFine", Abbonamento.class);
+    public Long getTotaleAbbonamentiInArcoTemporaleDaPuntoDiEmissione(LocalDate dataInizio, LocalDate dataFine, String idPunto) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(a) FROM Abbonamento a WHERE a.puntiEmissione.id = :idPunto AND a.dataEmissione BETWEEN :dataInizio AND :dataFine", Long.class);
         query.setParameter("dataInizio", dataInizio);
         query.setParameter("dataFine", dataFine);
         query.setParameter("idPunto", idPunto);
-        List<Abbonamento> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun abbonamento trovato");
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun abbonamento trovato");
         else return found;
     }
 
+    public Long getBigliettiVidimatiSuUnMezzo(String idMezzo) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.mezzo.id = :idMezzo AND b.dataVidimazione IS NOT NULL", Long.class);
+        query.setParameter("idMezzo", UUID.fromString(idMezzo));
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiPrimaDiUnaData(LocalDate data) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataVidimazione < :data", Long.class);
+        query.setParameter("data", data);
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiDopoUnaData(LocalDate data) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataVidimazione > :data", Long.class);
+        query.setParameter("data", data);
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiInUnaData(LocalDate data) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataVidimazione = :data", Long.class);
+        query.setParameter("data", data);
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiInUnArcoTemporale(LocalDate dataInizio, LocalDate dataFine) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataVidimazione BETWEEN :dataInizio AND :dataFine", Long.class);
+        query.setParameter("dataInizio", dataInizio);
+        query.setParameter("dataFine", dataFine);
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+
+    public Long getBigliettiVidimatiPrimaDiUnaDataSuUnMezzo(LocalDate data, String idMezzo) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.mezzo.id = :idMezzo AND b.dataVidimazione < :data", Long.class);
+        query.setParameter("data", data);
+        query.setParameter("idMezzo", UUID.fromString(idMezzo));
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiDopoUnaDataSuUnMezzo(LocalDate data, String idMezzo) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.mezzo.id = :idMezzo AND b.dataVidimazione > :data", Long.class);
+        query.setParameter("data", data);
+        query.setParameter("idMezzo", UUID.fromString(idMezzo));
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiInUnaDataSuUnMezzo(LocalDate data, String idMezzo) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.mezzo.id = :idMezzo AND b.dataVidimazione = :data", Long.class);
+        query.setParameter("data", data);
+        query.setParameter("idMezzo", UUID.fromString(idMezzo));
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
+
+    public Long getBigliettiVidimatiInUnArcoTemporaleSuUnMezzo(LocalDate dataInizio, LocalDate dataFine, String idMezzo) {
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.mezzo.id = :idMezzo AND b.dataVidimazione BETWEEN :dataInizio AND :dataFine", Long.class);
+        query.setParameter("dataInizio", dataInizio);
+        query.setParameter("dataFine", dataFine);
+        query.setParameter("idMezzo", UUID.fromString(idMezzo));
+        Long found = query.getSingleResultOrNull();
+        if (found == null || found == 0) throw new RuntimeException("Nessun biglietto trovato");
+        else return found;
+    }
 
 }

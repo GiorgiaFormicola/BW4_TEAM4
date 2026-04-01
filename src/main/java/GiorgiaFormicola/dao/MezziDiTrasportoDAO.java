@@ -60,7 +60,7 @@ public class MezziDiTrasportoDAO {
         query.setParameter("idMezzo", UUID.fromString(idMezzo));
         OperativitàMezzo found = query.getSingleResultOrNull();
         if (found == null) {
-            throw new NotFoundException(UUID.fromString(idMezzo));
+            throw new NotFoundException(idMezzo);
         } else {
             /*System.out.println("Il mezzo è in " + (found instanceof Servizio ? "servizio" : "manutenzione"));*/
             return found;

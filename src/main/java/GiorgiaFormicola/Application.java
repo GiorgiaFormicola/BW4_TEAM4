@@ -129,6 +129,10 @@ public class Application {
         MezzoDiTrasporto mezzoFromDB = mezziDAO.findById("76246ff1-f859-4320-a520-97073d7ebea6");
         emissioniDAO.utilizzaEmissione(bigliettoFromDB, mezzoFromDB);*/
         System.out.println("Hello World!");
+
+        puntiEmissioneDAO.savePuntoEmissione(new DistributoriAutomatici(true));
+        puntiEmissioneDAO.savePuntoEmissione(new DistributoriAutomatici(false));
+        puntiEmissioneDAO.savePuntoEmissione(new RivenditoriAutorizzati(true));
     }
 }
 
