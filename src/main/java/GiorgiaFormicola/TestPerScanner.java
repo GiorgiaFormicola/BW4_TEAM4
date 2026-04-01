@@ -3,9 +3,12 @@ package GiorgiaFormicola;
 import GiorgiaFormicola.dao.EmissioniDAO;
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
+import GiorgiaFormicola.dao.UtenteDAO;
 import GiorgiaFormicola.entities.Emissione;
 import GiorgiaFormicola.entities.MezzoDiTrasporto;
 import GiorgiaFormicola.entities.PuntiEmissione;
+import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -20,6 +23,7 @@ public class TestPerScanner {
     private static final EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
     private static final PuntiEmissioneDAO puntiDAO = new PuntiEmissioneDAO(entityManager);
     private static final MezziDiTrasportoDAO mezziDAO = new MezziDiTrasportoDAO(entityManager);
+    private static final UtenteDAO utentiDAO = new UtenteDAO(entityManager);
 
     public static void main(String[] args) {
         //SCEGLIERE TIPO DI SIMULAZIONE
@@ -33,10 +37,10 @@ public class TestPerScanner {
             try {
                 simulazione = Integer.parseInt(scanner.nextLine());
                 if (simulazione < 1 || simulazione > 3)
-                    System.out.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                    System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
                 else break;
             } catch (NumberFormatException e) {
-                System.out.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
             }
         }
 
@@ -60,10 +64,10 @@ public class TestPerScanner {
             try {
                 interazione = Integer.parseInt(scanner.nextLine());
                 if (interazione < 1 || interazione > 3)
-                    System.out.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
+                    System.err.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
                 else break;
             } catch (NumberFormatException e) {
-                System.out.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
+                System.err.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
             }
         }
 
@@ -86,7 +90,7 @@ public class TestPerScanner {
                     operazione = Integer.parseInt(scanner.nextLine());
                     if (operazione == 0) break;
                     if (operazione != 1)
-                        System.out.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     else {
                         System.out.println("\nInserire l'id del punto di emissione in cui ti trovi per acquistare il biglietto");
                         String idPuntoEmissione = scanner.nextLine();
@@ -96,19 +100,20 @@ public class TestPerScanner {
                             emissioniDAO.acquistaBiglietto(puntoEmissione);
                         } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivoException e) {
                             if (e instanceof IllegalArgumentException)
-                                System.out.println("\nERRORE: Formato ID non valido\n");
-                            else System.out.println("\nERRORE:" + e.getMessage() + "\n");
+                                System.err.println("\nERRORE: Formato ID non valido\n");
+                            else System.err.println("\nERRORE:" + e.getMessage() + "\n");
                         }
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                    System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
                 }
 
             }
         }
 
         //GESTIONE MEZZO DI TRAPORTO + PERSONA NON REGISTRATA
-
+        //TODO: check eccezione capienza massima raggiunta
+        //TODO: aggiustare doppia vidimazione valida nella stessa simulazione
         if (interazione == 1 && simulazione == 2) {
             while (true) {
                 int operazione;
@@ -119,7 +124,7 @@ public class TestPerScanner {
                     operazione = Integer.parseInt(scanner.nextLine());
                     if (operazione == 0) break;
                     if (operazione != 1)
-                        System.out.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     else {
                         System.out.println("\nInserire l'id del mezzo su cui vuoi salire");
                         String idMezzo = scanner.nextLine();
@@ -139,12 +144,42 @@ public class TestPerScanner {
                                 BigliettoGiàVidimatoException |
                                 CapienzaMassimaRaggiuntaException e) {
                             if (e instanceof IllegalArgumentException)
-                                System.out.println("\nERRORE: Formato ID non valido\n");
-                            else System.out.println("\nERRORE:" + e.getMessage() + "\n");
+                                System.err.println("\nERRORE: Formato ID non valido\n");
+                            else System.err.println("\nERRORE:" + e.getMessage() + "\n");
                         }
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                    System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                }
+            }
+        }
+
+        //GESTIONE PORTALE + PERSONA NON REGISTRATA
+        //TODO: controllo su formato codice fiscale
+        //TODO: messaggio all'utente se codice fiscale già associato ad una persona nel DB
+        if (interazione == 1 && simulazione == 3) {
+            while (true) {
+                int operazione;
+                System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("1.REGISTRATI AL PORTALE");
+                System.out.println("0.ESCI DALLA SIMULAZIONE");
+                try {
+                    operazione = Integer.parseInt(scanner.nextLine());
+                    if (operazione == 0) break;
+                    if (operazione != 1)
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    else {
+                        System.out.println("\nInserire il proprio codice fiscale");
+                        String codiceFiscale = scanner.nextLine();
+                        Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, codiceFiscale);
+                        try {
+                            utentiDAO.save(utente);
+                        } catch (UtenteGiàPresenteNelDBException e) {
+                            System.err.println("ERRORE: " + e.getMessage());
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
                 }
             }
         }

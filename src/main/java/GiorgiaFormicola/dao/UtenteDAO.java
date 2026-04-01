@@ -1,6 +1,7 @@
 package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.exceptions.UtenteGiàPresenteNelDBException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -19,10 +20,11 @@ public class UtenteDAO {
             t.begin();
             em.persist(u);
             t.commit();
-            System.out.println("Utente creato con successo!");
+            System.out.println("Utente registrato al portale con successo!");
         } catch (Exception e) {
-            if (t.isActive()) t.rollback();
-            System.err.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");
+           /* if (t.isActive()) t.rollback();
+            System.err.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");*/
+            throw new UtenteGiàPresenteNelDBException();
         }
     }
 
