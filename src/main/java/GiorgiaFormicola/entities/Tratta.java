@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tratte")
+@Table(name = "tratte", uniqueConstraints = {@UniqueConstraint(columnNames = {"partenza", "capolinea"})
+})
 public class Tratta {
     @Id
     @GeneratedValue
@@ -26,7 +27,6 @@ public class Tratta {
 
     public Tratta() {
     }
-
 
     public Tratta(String partenza, String capolinea, LocalTime percorrenzaPrevista) {
         this.partenza = partenza;
