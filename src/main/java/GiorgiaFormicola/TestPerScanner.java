@@ -1,10 +1,12 @@
 package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.EmissioniDAO;
+import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
+import GiorgiaFormicola.entities.Emissione;
+import GiorgiaFormicola.entities.MezzoDiTrasporto;
 import GiorgiaFormicola.entities.PuntiEmissione;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.PuntoDiEmissioneNonAttivo;
+import GiorgiaFormicola.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -17,6 +19,7 @@ public class TestPerScanner {
     private static final EntityManager entityManager = entityManagerFactory.createEntityManager();
     private static final EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
     private static final PuntiEmissioneDAO puntiDAO = new PuntiEmissioneDAO(entityManager);
+    private static final MezziDiTrasportoDAO mezziDAO = new MezziDiTrasportoDAO(entityManager);
 
     public static void main(String[] args) {
         //SCEGLIERE TIPO DI SIMULAZIONE
@@ -70,7 +73,7 @@ public class TestPerScanner {
             case 3 -> "CON AMMINISTRATORE";
             default -> "INTERAZIONE NON VALIDA";
         });
-        System.out.println();
+        System.out.println("\n");
 
         //GESTIONE PUNTO DI EMISSIONE + PERSONA NON REGISTRATA
         if (interazione == 1 && simulazione == 1) {
@@ -91,18 +94,58 @@ public class TestPerScanner {
                         try {
                             puntoEmissione = puntiDAO.getPuntoEmissioneById(idPuntoEmissione);
                             emissioniDAO.acquistaBiglietto(puntoEmissione);
-                        } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivo e) {
-                            System.out.println(e.getMessage());
+                        } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivoException e) {
+                            if (e instanceof IllegalArgumentException)
+                                System.out.println("\nERRORE: Formato ID non valido\n");
+                            else System.out.println("\nERRORE:" + e.getMessage() + "\n");
                         }
-
-                       /* Il punto emissione con id a229f590-8a19-40fb-b93d-55816ee258e3 è stato creato TRUE
-                        Il punto emissione con id 6ddc561e-1892-4172-9ce0-fe22fd642383 è stato creato FALSE
-                        Il punto emissione con id 71133d75-ff97-47af-86f7-cc10dc277f02 è stato creato TRUE*/
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
                 }
 
+            }
+        }
+
+        //GESTIONE MEZZO DI TRAPORTO + PERSONA NON REGISTRATA
+
+        if (interazione == 1 && simulazione == 2) {
+            while (true) {
+                int operazione;
+                System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("1.VIDIMA BIGLIETTO");
+                System.out.println("0.ESCI DALLA SIMULAZIONE");
+                try {
+                    operazione = Integer.parseInt(scanner.nextLine());
+                    if (operazione == 0) break;
+                    if (operazione != 1)
+                        System.out.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    else {
+                        System.out.println("\nInserire l'id del mezzo su cui vuoi salire");
+                        String idMezzo = scanner.nextLine();
+                        MezzoDiTrasporto mezzo;
+                        try {
+                            mezzo = mezziDAO.findById(idMezzo);
+                            mezziDAO.controllaSeInServizio(mezzo);
+                            System.out.println("\nInserire l'id del biglietto da vidimare");
+                            String idBiglietto = scanner.nextLine();
+                            Emissione biglietto;
+                            biglietto = emissioniDAO.findById(idBiglietto);
+                            emissioniDAO.utilizzaEmissione(biglietto, mezzo);
+                        } catch (
+                                NotFoundException |
+                                IllegalArgumentException |
+                                MezzoNonInServizioException |
+                                BigliettoGiàVidimatoException |
+                                CapienzaMassimaRaggiuntaException e) {
+                            if (e instanceof IllegalArgumentException)
+                                System.out.println("\nERRORE: Formato ID non valido\n");
+                            else System.out.println("\nERRORE:" + e.getMessage() + "\n");
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("\nERRORE: Operazione selezionata non valida, riprovare! \n");
+                }
             }
         }
 

@@ -1,7 +1,7 @@
 package GiorgiaFormicola.exceptions;
 
-public class PuntoDiEmissioneNonAttivo extends RuntimeException {
-    public PuntoDiEmissioneNonAttivo() {
+public class PuntoDiEmissioneNonAttivoException extends RuntimeException {
+    public PuntoDiEmissioneNonAttivoException() {
         super("Impossibile effettuare l'operazione richiesta. Punto di emissione non in servizio.");
     }
 }

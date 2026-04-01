@@ -2,7 +2,10 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.*;
 import GiorgiaFormicola.enums.TipoAbbonamento;
-import GiorgiaFormicola.exceptions.PuntoDiEmissioneNonAttivo;
+import GiorgiaFormicola.exceptions.BigliettoGiàVidimatoException;
+import GiorgiaFormicola.exceptions.CapienzaMassimaRaggiuntaException;
+import GiorgiaFormicola.exceptions.NotFoundException;
+import GiorgiaFormicola.exceptions.PuntoDiEmissioneNonAttivoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -29,7 +32,7 @@ public class EmissioniDAO {
     public Emissione findById(String idEmissione) {
         Emissione found = entityManager.find(Emissione.class, UUID.fromString(idEmissione));
         if (found == null)
-            throw new RuntimeException("Emissione non trovata");//TODO: aggiungi eccezione not found
+            throw new NotFoundException(idEmissione);
         else return found;
     }
 
@@ -44,7 +47,7 @@ public class EmissioniDAO {
 
     public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
         if (!puntoEmissione.isAttivo())
-            throw new PuntoDiEmissioneNonAttivo();
+            throw new PuntoDiEmissioneNonAttivoException();
         else {
             Emissione nuovaBiglietto = new Biglietto(puntoEmissione);
             this.save(nuovaBiglietto);
@@ -131,9 +134,9 @@ public class EmissioniDAO {
         if (emissione instanceof Biglietto) { //VIDIMA BIGLIETTO
             Biglietto biglietto = (Biglietto) emissione;
             if (biglietto.getDataVidimazione() != null)
-                throw new RuntimeException("Impossibile vidimare il biglietto, biglietto già utilizzato");
+                throw new BigliettoGiàVidimatoException();
             if (mezzo.getBigliettiValidati().size() == mezzo.getCapienza())
-                throw new RuntimeException("Impossibile validare il biglietto, " + mezzo.getClass().getSimpleName() + " pieno. Aspettare la prossima corsa");
+                throw new CapienzaMassimaRaggiuntaException();
             else {
                 Query updateQuery = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = CURRENT_DATE, b.mezzo = :mezzo  WHERE b.id = :idBiglietto ");
                 updateQuery.setParameter("mezzo", mezzo);
@@ -142,7 +145,7 @@ public class EmissioniDAO {
                 transaction.begin();
                 updateQuery.executeUpdate();
                 transaction.commit();
-                System.out.println("Biglietto vidimato in data " + LocalDate.now() + " sul mezzo " + mezzo.getId());
+                System.out.println("\nBiglietto vidimato con successo, salire a bordo!");
             }
         } else { //UTILIZZA ABBONAMENTO
             Abbonamento abbonamento = (Abbonamento) emissione;
@@ -150,7 +153,7 @@ public class EmissioniDAO {
                 throw new RuntimeException("Impossibile utilizzare l'abbonamento, tessera scaduta il " + abbonamento.getTessera().getDataScadenza());
             if (abbonamento.getDataScadenza().isBefore(LocalDate.now()))
                 throw new RuntimeException("Impossibile utilizzare l'abbonamento, abbonamento scaduto il" + abbonamento.getDataScadenza());
-            else System.out.println("Abbonamento valido, salire a bordo");
+            else System.out.println("\nAbbonamento valido, salire a bordo");
         }
     }
 

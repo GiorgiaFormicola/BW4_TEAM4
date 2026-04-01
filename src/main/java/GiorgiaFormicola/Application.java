@@ -130,9 +130,13 @@ public class Application {
         emissioniDAO.utilizzaEmissione(bigliettoFromDB, mezzoFromDB);*/
         System.out.println("Hello World!");
 
-        puntiEmissioneDAO.savePuntoEmissione(new DistributoriAutomatici(true));
+    /*    puntiEmissioneDAO.savePuntoEmissione(new DistributoriAutomatici(true));
         puntiEmissioneDAO.savePuntoEmissione(new DistributoriAutomatici(false));
         puntiEmissioneDAO.savePuntoEmissione(new RivenditoriAutorizzati(true));
+
+        mezziDAO.addMezzo("autobus");
+        mezziDAO.addMezzo("tram");*/
+        mezziDAO.updateOperativitàAttualeMezzo("765997dd-9881-432d-9b93-f336e9e8b164", "manutenzione", "prova update");
     }
 }
 
