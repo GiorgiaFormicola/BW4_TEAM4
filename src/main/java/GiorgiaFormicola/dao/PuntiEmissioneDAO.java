@@ -2,6 +2,7 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.PuntiEmissione;
+import GiorgiaFormicola.entities.RivenditoriAutorizzati;
 import GiorgiaFormicola.exceptions.CambioStatoPuntoEmissioneException;
 import GiorgiaFormicola.exceptions.NessunElementoTrovatoException;
 import GiorgiaFormicola.exceptions.NotFoundException;
@@ -9,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,34 +75,53 @@ public class PuntiEmissioneDAO {
         }
     }
 
-    public List<PuntiEmissione> findPuntiEmissioneAttivi() {
-        TypedQuery<PuntiEmissione> query = entityManager.createQuery("SELECT p FROM PuntiEmissione p WHERE p.attivo = true OR p.attivo IS NULL", PuntiEmissione.class);
+    public List<RivenditoriAutorizzati> ottieniRivenditori() {
+        TypedQuery<RivenditoriAutorizzati> query = entityManager.createQuery("SELECT r FROM RivenditoriAutorizzati r", RivenditoriAutorizzati.class);
 
-        List<PuntiEmissione> listaPuntiEmissioneAttivi = query.getResultList();
+        List<RivenditoriAutorizzati> listaRivenditoriAutorizzatiAttivi = query.getResultList();
 
-        if (listaPuntiEmissioneAttivi.isEmpty()) {
+        if (listaRivenditoriAutorizzatiAttivi.isEmpty()) {
             throw new NessunElementoTrovatoException();
-        } else return listaPuntiEmissioneAttivi;
+        } else return listaRivenditoriAutorizzatiAttivi;
     }
 
-    public List<PuntiEmissione> findDistributoriAttivi() {
-        TypedQuery<PuntiEmissione> query = entityManager.createQuery("SELECT p FROM PuntiEmissione p WHERE p.attivo = true", PuntiEmissione.class);
-
-        List<PuntiEmissione> listaPuntiEmissioneAttivi = query.getResultList();
-
-        if (listaPuntiEmissioneAttivi.isEmpty()) {
-            throw new NessunElementoTrovatoException();
-        } else return listaPuntiEmissioneAttivi;
+    public List<PuntiEmissione> findPuntiDiEmissioneAttivi() {
+        List<RivenditoriAutorizzati> listaRivenditori = new ArrayList<>();
+        List<DistributoriAutomatici> listaDistributoriAttivi = new ArrayList<>();
+        try {
+            listaRivenditori = this.ottieniRivenditori();
+        } catch (NessunElementoTrovatoException e) {
+            //
+        }
+        try {
+            listaDistributoriAttivi = this.findDistributoriAttivi();
+        } catch (NessunElementoTrovatoException e) {
+            //
+        }
+        List<PuntiEmissione> listaPuntiAttivi = new ArrayList<>();
+        listaPuntiAttivi.addAll(listaRivenditori);
+        listaPuntiAttivi.addAll(listaDistributoriAttivi);
+        return listaPuntiAttivi;
     }
 
-    public List<PuntiEmissione> findDistributoriNonAttivi() {
-        TypedQuery<PuntiEmissione> query = entityManager.createQuery("SELECT p FROM PuntiEmissione p WHERE p.attivo = false", PuntiEmissione.class);
+    public List<DistributoriAutomatici> findDistributoriAttivi() {
+        TypedQuery<DistributoriAutomatici> query = entityManager.createQuery("SELECT d FROM DistributoriAutomatici d WHERE d.attivo = true", DistributoriAutomatici.class);
 
-        List<PuntiEmissione> listaPuntiEmissioneNonAttivi = query.getResultList();
+        List<DistributoriAutomatici> listaDistributoriAutomaticiAttivi = query.getResultList();
 
-        if (listaPuntiEmissioneNonAttivi.isEmpty()) {
+        if (listaDistributoriAutomaticiAttivi.isEmpty()) {
             throw new NessunElementoTrovatoException();
-        } else return listaPuntiEmissioneNonAttivi;
+        } else return listaDistributoriAutomaticiAttivi;
+    }
+
+    public List<DistributoriAutomatici> findDistributoriNonAttivi() {
+        TypedQuery<DistributoriAutomatici> query = entityManager.createQuery("SELECT p FROM DistributoriAutomatici p WHERE p.attivo = false", DistributoriAutomatici.class);
+
+        List<DistributoriAutomatici> listaDistributoriAutomaticiNonAttivi = query.getResultList();
+
+        if (listaDistributoriAutomaticiNonAttivi.isEmpty()) {
+            throw new NessunElementoTrovatoException();
+        } else return listaDistributoriAutomaticiNonAttivi;
     }
 
     public DistributoriAutomatici getDistributoreById(String distributoreId) {

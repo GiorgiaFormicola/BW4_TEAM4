@@ -2,6 +2,6 @@ package GiorgiaFormicola.exceptions;
 
 public class AbbonamentoAncoraValidoException extends RuntimeException {
     public AbbonamentoAncoraValidoException() {
-        super("Impossibile rinnovare l'abbonamento, abbonamento ancora in corso di validità.");
+        super("Impossibile effettuare l'operazione, abbonamento ancora in corso di validità.");
     }
 }

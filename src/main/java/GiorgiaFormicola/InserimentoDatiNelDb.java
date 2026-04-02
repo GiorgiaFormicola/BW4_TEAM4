@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class InserimentoDatiNelDb {
 
@@ -28,10 +27,10 @@ public class InserimentoDatiNelDb {
         Utente utente4 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abcdefg1234567");
         Utente utente5 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abc1234");
 
-        Utente utenteFromDB = utenteDAO.findById(UUID.fromString("0cc02bc2-c6e1-447d-a9d6-dc41c90d75df"));
-        Utente utenteFromDB2 = utenteDAO.findById(UUID.fromString("542ff36b-c323-4446-a43f-2dd088e5dbb3"));
-        Utente utenteFromDB3 = utenteDAO.findById(UUID.fromString("7299ed20-2710-43b2-8f73-db5bbc87edfd"));
-        Utente utenteFromDB4 = utenteDAO.findById(UUID.fromString("a89909c2-e1c1-4057-aab5-953fa3b16a60"));
+        Utente utenteFromDB = utenteDAO.findById("0cc02bc2-c6e1-447d-a9d6-dc41c90d75df");
+        Utente utenteFromDB2 = utenteDAO.findById("542ff36b-c323-4446-a43f-2dd088e5dbb3");
+        Utente utenteFromDB3 = utenteDAO.findById("7299ed20-2710-43b2-8f73-db5bbc87edfd");
+        Utente utenteFromDB4 = utenteDAO.findById("a89909c2-e1c1-4057-aab5-953fa3b16a60");
 //        try {
 //            utenteDAO.save(utente);
 //            utenteDAO.save(utente2);

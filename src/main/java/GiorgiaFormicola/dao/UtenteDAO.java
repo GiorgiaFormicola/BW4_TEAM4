@@ -1,6 +1,7 @@
 package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.exceptions.NotFoundException;
 import GiorgiaFormicola.exceptions.UtenteGiàPresenteNelDBException;
 import GiorgiaFormicola.exceptions.UtenteNonTrovatoException;
 import jakarta.persistence.EntityManager;
@@ -29,8 +30,11 @@ public class UtenteDAO {
         }
     }
 
-    public Utente findById(UUID id) {
-        return em.find(Utente.class, id);
+    public Utente findById(String id) {
+        Utente found = em.find(Utente.class, UUID.fromString(id));
+        if (found == null)
+            throw new NotFoundException(id);
+        else return found;
     }
 
 

@@ -3,6 +3,8 @@ package GiorgiaFormicola;
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
+import GiorgiaFormicola.entities.Tessera;
+import GiorgiaFormicola.entities.Utente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -164,6 +166,9 @@ public class Application {
 
         /*Utente amministratore = new Utente(TipoDiUtente.AMMINISTRATORE, "provaadmin");
         utenteDAO.save(amministratore);*/
+        Utente utente = utenteDAO.findById("6b239d68-94bc-4d4c-87d7-0c5d6b190a7b");
+        tessereDAO.saveTessera(new Tessera(1L, utente));
+
 
     }
 }

@@ -10,7 +10,6 @@ import jakarta.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class TessereDAO {
 
@@ -22,24 +21,34 @@ public class TessereDAO {
     }
 
     public void saveTessera(Tessera nuovaTessera) {
-
-        Tessera tesseraEsistente = this.findTesseraByNumeroTessera(nuovaTessera.getNumeroTessera());
-
-        if (tesseraEsistente != null){
-            throw new TesseraGiaEsistente();
-//            System.out.println("Numero tessera gia esistente " + nuovaTessera.getNumeroTessera());
-//            return;
+        try {
+            this.controllaSeTesseraGiàEsistente(nuovaTessera.getNumeroTessera());
+            EntityTransaction transaction = entityManager.getTransaction();
+            transaction.begin();
+            entityManager.persist(nuovaTessera);
+            transaction.commit();
+            System.out.println("La tessera " + nuovaTessera.getNumeroTessera() + " è stata salvata correttamente");
+        } catch (TesseraGiaEsistente e) {
+            System.err.println("ERRORE: impossibile creare una nuova tessera. " + e.getMessage());
         }
+    }
 
-        EntityTransaction transaction = entityManager.getTransaction();
+    public void createNuovaTessera(long numeroTessera, Utente utente) {
+        if (utente.getTessera() != null) throw new UtenteAssociatoATessera();
+        Tessera tesseraDaSalvare = new Tessera(numeroTessera, utente);
+        try {
+            this.saveTessera(tesseraDaSalvare);
+        } catch (TesseraGiaEsistente e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
-        transaction.begin();
 
-        entityManager.persist(nuovaTessera);
-
-        transaction.commit();
-
-        System.out.println("La tessera " + nuovaTessera + " è stata salvata correttamente");
+    public void controllaSeTesseraGiàEsistente(long numeroTessera) {
+        TypedQuery<Tessera> query = entityManager.createQuery("SELECT t FROM Tessera t WHERE t.numeroTessera = :numeroTessera", Tessera.class);
+        query.setParameter("numeroTessera", numeroTessera);
+        Tessera found = query.getSingleResultOrNull();
+        if (found != null) throw new TesseraGiaEsistente();
     }
 
     public Tessera findTesseraById(String tesseraId) {
@@ -54,61 +63,30 @@ public class TessereDAO {
 
     public Tessera findTesseraByNumeroTessera(long numeroTessera) {
         TypedQuery<Tessera> query = entityManager.createQuery("SELECT t FROM Tessera t WHERE t.numeroTessera = :numeroTessera", Tessera.class);
-
         query.setParameter("numeroTessera", numeroTessera);
-
         List<Tessera> risultatoLista = query.getResultList();
-
         if (risultatoLista.isEmpty()) {
             throw new NotFoundException(String.valueOf(numeroTessera));
-        } else {
-            System.out.println("Tessera trovata con numero " + numeroTessera + ": ");
-            risultatoLista.forEach(tessera -> System.out.println(tessera));
-        }
-
-        return risultatoLista.get(0);
+        } else return risultatoLista.getFirst();
     }
 
     public void deleteTesseraById(String tesseraId) {
         Tessera found = this.findTesseraById(tesseraId);
-
         if (found == null) {
             System.out.println("Tessera non trovata");
             return;
         }
-
-
         EntityTransaction transaction = entityManager.getTransaction();
-
         transaction.begin();
-
         if (found.getUtente() != null) {
             Utente utente = found.getUtente();
             utente.setTessera(null);
         }
-
         entityManager.remove(found);
-
         transaction.commit();
-
         System.out.println("La tessera con id " + tesseraId + " è stata cancellata");
     }
 
-    public void createNuovaTessera(long numeroTessera, Utente utente){
-        if (utente.getTessera() != null){
-            throw new UtenteAssociatoATessera();
-        }
-
-        Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
-
-        Tessera tesseraDaSalvare = new Tessera(numeroTessera, utente);
-
-        try {
-            this.saveTessera(tesseraDaSalvare);
-        } catch (TesseraGiaEsistente e){
-            System.err.println(e.getMessage());
-        }
-    }
 
 //    public void createNuovaTessera(long numeroTessera, String codiceFiscale) {
 //
@@ -209,90 +187,61 @@ public class TessereDAO {
 //    }
 
     public void rinnovaTessera(long numeroTessera) {
-        EntityTransaction transaction = entityManager.getTransaction();
-
-        Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
-
-        if (tessera == null) {
-            System.out.println("Tessera non trovata con numero: " + numeroTessera);
-            return;
-        }
-
-        LocalDate oggi = LocalDate.now();
-
-        if (oggi.isBefore(tessera.getDataScadenza())) {
-            System.out.println("Tessera ancora valida fino al: " + tessera.getDataScadenza());
-            return;
-        }
-
-        transaction.begin();
-
-        tessera.setDataEmissione(oggi);
-        tessera.setDataScadenza(oggi.plusYears(1));
-
-        transaction.commit();
-
-        System.out.println("Tessera rinnovata! Nuova scadenza: " + tessera.getDataScadenza());
-    }
-
-    public void modificaScadenzaTessera(long numeroTessera){
-        EntityTransaction transaction = entityManager.getTransaction();
-
         try {
             Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
-
+            EntityTransaction transaction = entityManager.getTransaction();
+            LocalDate oggi = LocalDate.now();
+            if (oggi.isBefore(tessera.getDataScadenza())) throw new TesseraAncoraValidaException();
             transaction.begin();
+            tessera.setDataEmissione(oggi);
+            tessera.setDataScadenza(oggi.plusYears(1));
+            transaction.commit();
+            System.out.println("Tessera rinnovata con successo. Nuova scadenza: " + tessera.getDataScadenza());
+        } catch (NotFoundException e) {
+            System.err.println("ERRORE: " + e.getMessage());
+        }
+    }
 
+    public void modificaScadenzaTessera(long numeroTessera) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
+            transaction.begin();
             tessera.setDataEmissione(LocalDate.now().minusYears(2));
             tessera.setDataScadenza(LocalDate.now().minusYears(1));
-
             transaction.commit();
-
             System.out.println("La data di scadenza è stata modificata con successo");
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             System.err.println(e.getMessage());
         }
     }
 
     public void checkScadenzaTessera(long numeroTessera) {
         Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
-
         if (tessera == null) {
             throw new NotFoundTesseraException(tessera);
         }
-
         LocalDate oggi = LocalDate.now();
-
         if (!oggi.isAfter(tessera.getDataScadenza())) {
             System.out.println("La tessera è valida e scadrà il " + tessera.getDataScadenza());
         } else {
             System.out.println("Tessera scaduta il " + tessera.getDataScadenza());
-
             Scanner scanner = new Scanner(System.in);
             System.out.println("Vuoi rinnovare la tessera? (si/no)");
-
             String risposta = scanner.nextLine();
-
             if (risposta.equalsIgnoreCase("si")) {
                 EntityTransaction transaction = entityManager.getTransaction();
-
                 transaction.begin();
-
                 LocalDate nuovaData = LocalDate.now();
                 tessera.setDataEmissione(nuovaData);
                 tessera.setDataScadenza(nuovaData.plusYears(1));
-
                 transaction.commit();
                 System.out.println("Tessera rinnovata! Nuova scadenza " + tessera.getDataScadenza());
             } else {
                 System.out.println("Rinnovo annullato");
             }
         }
-
-
     }
-
-
 
 
 }

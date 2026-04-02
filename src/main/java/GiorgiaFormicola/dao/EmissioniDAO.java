@@ -53,8 +53,7 @@ public class EmissioniDAO {
     }*/
 
     public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
-
-        Emissione nuovoBiglietto;
+        Biglietto nuovoBiglietto;
         if (puntoEmissione instanceof DistributoriAutomatici) {
             DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
             if (!distributore.isAttivo())
@@ -69,7 +68,7 @@ public class EmissioniDAO {
     }
 
 
-   /* public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
+    /*public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
         if (!puntoEmissione.isAttivo())
             throw new PuntoDiEmissioneNonAttivoException();
         if (tessera.getDataScadenza().isBefore(LocalDate.now()))
@@ -81,7 +80,7 @@ public class EmissioniDAO {
     }*/
 
     public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
-        Emissione nuovoAbbonamento;
+        Abbonamento nuovoAbbonamento;
         if (puntoEmissione instanceof DistributoriAutomatici) {
             DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
             if (!distributore.isAttivo())
@@ -92,12 +91,23 @@ public class EmissioniDAO {
         } else {
             nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
         }
-
-        if (tessera.getDataScadenza().isBefore(LocalDate.now()))
+        try {
+            Abbonamento precedenteAbbonamento = this.ottieniUltimoAbbonamentoInBaseATessera(tessera);
+            if (precedenteAbbonamento.getDataScadenza().isAfter(LocalDate.now()))
+                throw new AbbonamentoAncoraValidoException();
+        } catch (TesseraScadutaException | AbbonamentoTesseraNonTrovatoException e) {
+            if (e instanceof TesseraScadutaException) System.err.println("ERRORE: " + e.getMessage());
+            else {
+                this.save(nuovoAbbonamento);
+                System.out.println("Acquisto andato a buon fine! L'abbonamento scadrà in data " + nuovoAbbonamento.getDataScadenza());
+            }
+        }
+        /*if (tessera.getDataScadenza().isBefore(LocalDate.now()))
             throw new TesseraScadutaException();
         else {
             this.save(nuovoAbbonamento);
-        }
+            System.out.println("Acquisto andato a buon fine! L'abbonamento scadrà in data " + nuovoAbbonamento.getDataScadenza());
+        }*/
     }
 
     public Abbonamento ottieniUltimoAbbonamentoInBaseATessera(Tessera tessera) {
@@ -106,6 +116,7 @@ public class EmissioniDAO {
             throw new TesseraScadutaException();
         } else {
             TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setParameter("idTessera", tessera.getId());
             query.setMaxResults(1);
             List<Abbonamento> found = query.getResultList();
             if (found.isEmpty()) {
@@ -144,6 +155,7 @@ public class EmissioniDAO {
             throw new TesseraScadutaException();
         } else {
             TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setParameter("idTessera", tessera.getId());
             query.setMaxResults(1);
             List<Abbonamento> found = query.getResultList();
             if (found.isEmpty()) {
@@ -187,7 +199,7 @@ public class EmissioniDAO {
         Abbonamento abbonamentoDaUtilizzare = this.ottieniUltimoAbbonamentoInBaseATessera(tessera);
         if (abbonamentoDaUtilizzare.getDataScadenza().isBefore(LocalDate.now()))
             throw new AbbonamentoScadutoException();
-        else System.out.println("\nAbbonamento valido, salire a bordo");
+        else System.out.println("\nAbbonamento valido, salire a bordo!");
     }
 
     public Biglietto findBigliettoById(String idBiglietto) {
@@ -196,7 +208,6 @@ public class EmissioniDAO {
             throw new NotFoundException(idBiglietto);
         else return found;
     }
-
 
     public void utilizzaBiglietto(Biglietto biglietto, MezzoDiTrasporto mezzo) {
         if (biglietto.getDataVidimazione() != null)
