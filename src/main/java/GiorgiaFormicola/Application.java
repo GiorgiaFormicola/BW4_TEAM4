@@ -144,7 +144,7 @@ public class Application {
 
         //TEST DAO PER TESSERA
         Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abc123");
-        Tessera tessera = new Tessera(3L);
+//        Tessera tessera = new Tessera(3L,);
         TessereDAO tessereDAO = new TessereDAO(entityManager);
         UtenteDAO utenteDAO = new UtenteDAO(entityManager);
 //        utenteDAO.save(utente);
