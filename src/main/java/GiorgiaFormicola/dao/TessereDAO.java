@@ -42,7 +42,7 @@ public class TessereDAO {
         System.out.println("La tessera " + nuovaTessera + " è stata salvata correttamente");
     }
 
-    public Tessera findTesseraById(UUID tesseraId) {
+    public Tessera findTesseraById(String tesseraId) {
         Tessera found = entityManager.find(Tessera.class, tesseraId);
         if (found == null) {
             throw new NotFoundException(tesseraId);
@@ -70,10 +70,10 @@ public class TessereDAO {
         return risultatoLista.get(0);
     }
 
-    public void deleteTesseraById(UUID tesseraId) {
+    public void deleteTesseraById(String tesseraId) {
         Tessera found = this.findTesseraById(tesseraId);
 
-        if (found == null){
+        if (found == null) {
             System.out.println("Tessera non trovata");
             return;
         }
@@ -83,7 +83,7 @@ public class TessereDAO {
 
         transaction.begin();
 
-        if (found.getUtente() != null){
+        if (found.getUtente() != null) {
             Utente utente = found.getUtente();
             utente.setTessera(null);
         }
@@ -192,6 +192,8 @@ public class TessereDAO {
 //        if (!queryTessera.getResultList().isEmpty()){
 //            System.out.println("L'utente ha gia una tessera");
 //            return;
+//        } else {
+//            System.out.println("Nessun utente trovato con codice fiscale " + codiceFiscale);
 //        }
 //
 //        nuovaTessera.setUtente(utentePresente);
@@ -207,12 +209,12 @@ public class TessereDAO {
 //        System.out.println("Tessera creata: " + nuovaTessera);
 //    }
 
-    public void rinnovaTessera(long numeroTessera){
+    public void rinnovaTessera(long numeroTessera) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
 
-        if (tessera == null){
+        if (tessera == null) {
             System.out.println("Tessera non trovata con numero: " + numeroTessera);
             return;
         }
@@ -234,16 +236,16 @@ public class TessereDAO {
         System.out.println("Tessera rinnovata! Nuova scadenza: " + tessera.getDataScadenza());
     }
 
-    public void checkScadenzaTessera(long numeroTessera){
+    public void checkScadenzaTessera(long numeroTessera) {
         Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
 
-        if (tessera == null){
+        if (tessera == null) {
             throw new NotFoundTesseraException(tessera);
         }
 
         LocalDate oggi = LocalDate.now();
 
-        if (!oggi.isAfter(tessera.getDataScadenza())){
+        if (!oggi.isAfter(tessera.getDataScadenza())) {
             System.out.println("La tessera è valida e scadrà il " + tessera.getDataScadenza());
         } else {
             System.out.println("Tessera scaduta il " + tessera.getDataScadenza());
@@ -253,7 +255,7 @@ public class TessereDAO {
 
             String risposta = scanner.nextLine();
 
-            if (risposta.equalsIgnoreCase("si")){
+            if (risposta.equalsIgnoreCase("si")) {
                 EntityTransaction transaction = entityManager.getTransaction();
 
                 transaction.begin();

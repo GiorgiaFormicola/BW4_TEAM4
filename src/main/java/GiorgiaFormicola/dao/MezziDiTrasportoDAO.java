@@ -1,6 +1,7 @@
 package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.*;
+import GiorgiaFormicola.exceptions.MezzoNonInServizioException;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -30,7 +31,7 @@ public class MezziDiTrasportoDAO {
     public MezzoDiTrasporto findById(String idMezzo) {
         MezzoDiTrasporto found = entityManager.find(MezzoDiTrasporto.class, UUID.fromString(idMezzo));
         if (found == null)
-            throw new RuntimeException("Mezzo di trasporto non trovato");//TODO: aggiungi eccezione not found
+            throw new NotFoundException(idMezzo);
         else return found;
     }
 
@@ -60,11 +61,18 @@ public class MezziDiTrasportoDAO {
         query.setParameter("idMezzo", UUID.fromString(idMezzo));
         OperativitàMezzo found = query.getSingleResultOrNull();
         if (found == null) {
-            throw new NotFoundException(UUID.fromString(idMezzo));
+            throw new NotFoundException(idMezzo);
         } else {
             /*System.out.println("Il mezzo è in " + (found instanceof Servizio ? "servizio" : "manutenzione"));*/
             return found;
         }
+    }
+
+    public void controllaSeInServizio(MezzoDiTrasporto mezzo) {
+        TypedQuery<OperativitàMezzo> query = entityManager.createQuery("SELECT o FROM OperativitàMezzo o WHERE o.mezzo.id = :idMezzo AND o.dataFine IS NULL AND o.class = Servizio", OperativitàMezzo.class);
+        query.setParameter("idMezzo", mezzo.getId());
+        OperativitàMezzo found = query.getSingleResultOrNull();
+        if (found == null) throw new MezzoNonInServizioException();
     }
 
     public void updateOperativitàAttualeMezzo(String idMezzo, String operatività, String descrizione) {

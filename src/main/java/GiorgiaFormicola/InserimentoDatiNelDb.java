@@ -2,7 +2,6 @@ package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.*;
-import GiorgiaFormicola.enums.TipoAbbonamento;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import GiorgiaFormicola.exceptions.TesseraGiaEsistente;
@@ -23,7 +22,7 @@ public class InserimentoDatiNelDb {
     public static void main(String[] args) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-
+        TrattaMezzoDAO trattaMezzoDAO = new TrattaMezzoDAO(entityManager);
 
 //        -------------------- UTENTE --------------------
         UtenteDAO utenteDAO = new UtenteDAO(entityManager);
@@ -49,6 +48,7 @@ public class InserimentoDatiNelDb {
 
 //        -------------------- TESSERA --------------------
         TessereDAO tessereDAO = new TessereDAO(entityManager);
+        /*Tessera tessera = new Tessera(3l);*/
         Tessera tessera = new Tessera(4l, utenteFromDB);
 //        try {
 //            tessereDAO.deleteTesseraById(UUID.fromString("1ac135e7-c52d-4a81-afb8-6fd21fa9e4ce"));
@@ -76,10 +76,10 @@ public class InserimentoDatiNelDb {
         PuntiEmissioneDAO puntiEmissioneDAO = new PuntiEmissioneDAO(entityManager);
         PuntiEmissione distributoreAutomatico2 = new DistributoriAutomatici(true);
 
-        PuntiEmissione puntoEmissioneDB = puntiEmissioneDAO.getPuntoEmissioneById(UUID.fromString("559d2102-ae07-45f2-b62e-bfcb8eca48fe"));
+        PuntiEmissione puntoEmissioneDB = puntiEmissioneDAO.getPuntoEmissioneById("559d2102-ae07-45f2-b62e-bfcb8eca48fe");
 //        PuntiEmissione puntoEmissioneDB2 = puntiEmissioneDAO.getPuntoEmissioneById(UUID.fromString("5ac5fea5-ad48-4895-a917-7c75634d91a5"));
 
-
+        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById("25dab02d-f0aa-4f87-bdfd-2134dafd9302");
 //        puntiEmissioneDAO.savePuntoEmissione(distributoriAutomatici);
 //        puntiEmissioneDAO.savePuntoEmissione(rivenditoriAutorizzati);
 
@@ -91,8 +91,6 @@ public class InserimentoDatiNelDb {
 //        Emissione abbonamento3 = new Abbonamento(puntoEmissioneDB, tesseraDB, TipoAbbonamento.MENSILE);
 
         Biglietto biglietto = new Biglietto(puntoEmissioneDB);
-
-        emissioniDAO.
 
         try {
             emissioniDAO.save(biglietto);
@@ -121,7 +119,7 @@ public class InserimentoDatiNelDb {
 
 
 //        -------------------- TRATTE-MEZZI --------------------
-        TrattaMezzoDAO trattaMezzoDAO = new TrattaMezzoDAO(entityManager);
+        TrattaMezzoDAO trattaMezzoDAO1 = new TrattaMezzoDAO(entityManager);
         MezzoDiTrasporto mezzoDiTrasporto = new Autobus();
 //        Tratta trattaFromDB = trattaDAO.getTrattaById(UUID.fromString("2104d876-babc-400b-b843-7406216d1f1d"));
 //        Tratta trattaFromDB2 = trattaDAO.getTrattaById(UUID.fromString("fc33338e-b072-4b99-a265-19caf7a5cde4"));

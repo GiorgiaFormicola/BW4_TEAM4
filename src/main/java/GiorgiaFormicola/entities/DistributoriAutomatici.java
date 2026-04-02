@@ -12,10 +12,10 @@ public class DistributoriAutomatici extends PuntiEmissione {
     private boolean attivo;
 
     protected DistributoriAutomatici() {
-
     }
 
     public DistributoriAutomatici(boolean attivo) {
+        super();
         this.attivo = attivo;
     }
 

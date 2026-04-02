@@ -1,6 +1,8 @@
 package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.exceptions.UtenteGiàPresenteNelDBException;
+import GiorgiaFormicola.exceptions.UtenteNonTrovatoException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -19,10 +21,11 @@ public class UtenteDAO {
             t.begin();
             em.persist(u);
             t.commit();
-            System.out.println("Utente creato con successo!");
+            System.out.println("Utente registrato al portale con successo!");
         } catch (Exception e) {
-            if (t.isActive()) t.rollback();
-            System.out.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");
+           /* if (t.isActive()) t.rollback();
+            System.err.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");*/
+            throw new UtenteGiàPresenteNelDBException();
         }
     }
 
@@ -33,7 +36,7 @@ public class UtenteDAO {
 
 //    recupero dell utente tramite codice fiscal
 
-    public Utente findByCodiceFiscale(String cf) {
+    /*public Utente findByCodiceFiscale(String cf) {
         try {
             return em.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :cf", Utente.class)
                     .setParameter("cf", cf)
@@ -41,6 +44,16 @@ public class UtenteDAO {
         } catch (Exception e) {
             return null;
         }
+    }*/
+    public Utente findByCodiceFiscale(String cf) {
+        try {
+            return em.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :cf", Utente.class)
+                    .setParameter("cf", cf)
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new UtenteNonTrovatoException();
+        }
     }
+
 
 }

@@ -52,35 +52,12 @@ public class Tessera {
         return utente;
     }
 
-
- /* public String getCodiceFiscale() {
-        return codiceFiscale;
-    }*/
-
- /*   public void setCodiceFiscale(String codiceFiscale) {
-        this.codiceFiscale = codiceFiscale;
-    }*/
-
     public LocalDate getDataScadenza() {
         return dataScadenza;
     }
 
-
-
-    public void setNumeroTessera(Long numeroTessera) {
-        this.numeroTessera = numeroTessera;
-    }
-
-    public void setDataEmissione(LocalDate dataEmissione) {
-        this.dataEmissione = dataEmissione;
-    }
-
     public void setDataScadenza(LocalDate dataScadenza) {
         this.dataScadenza = dataScadenza;
-    }
-
-    public void setUtente(Utente utente) {
-        this.utente = utente;
     }
 
     @Override
