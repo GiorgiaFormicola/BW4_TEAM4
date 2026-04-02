@@ -512,12 +512,11 @@ public class TestPerScanner {
                     System.out.println("2.Ottieni il totale di emissioni avvenute in uno specifico arco di tempo");
                     System.out.println("3.Ottieni il totale di emissioni emesse da uno specifico punto di emissione");
                     System.out.println("4.Ottieni il totale di biglietti vidimati su uno specifico mezzo");
-                    System.out.println("5.Ottieni il totale di biglietti vidimati in uno specifico arco di tempo");
                     System.out.println("0.ESCI DALLA SIMULAZIONE");
                     try {
                         operazione = Integer.parseInt(scanner.nextLine());
                         if (operazione == 0) break;
-                        if (operazione < 1 || operazione > 5)
+                        if (operazione < 1 || operazione > 4)
                             System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
 
                         //OPERAZIONE 1
@@ -772,17 +771,15 @@ public class TestPerScanner {
                                 }
                             }
                         }
-
-
-                        //OPERAZIONE 5
-
-
                     } catch (NumberFormatException e) {
                         System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     }
                 }
 
+            }
 
+            //GESTIONE PARCO MEZZI
+            if (areaPortale == 3) {
             }
 
 
