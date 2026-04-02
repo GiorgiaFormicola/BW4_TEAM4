@@ -7,12 +7,8 @@ import jakarta.persistence.Entity;
 @DiscriminatorValue("rivenditori_autorizzati")
 public class RivenditoriAutorizzati extends PuntiEmissione{
 
-    protected RivenditoriAutorizzati(){
+    public RivenditoriAutorizzati(){
 
-    }
-
-    public RivenditoriAutorizzati(boolean attivo){
-        super(attivo);
     }
 
     @Override

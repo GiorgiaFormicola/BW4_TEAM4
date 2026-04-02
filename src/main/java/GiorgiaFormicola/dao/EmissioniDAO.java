@@ -43,21 +43,37 @@ public class EmissioniDAO {
     }
 
     public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
-        if (!puntoEmissione.isAttivo())
-            throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
-        else {
-            Emissione nuovaBiglietto = new Biglietto(puntoEmissione);
-            this.save(nuovaBiglietto);
+
+        Emissione nuovoBiglietto;
+        if (puntoEmissione instanceof DistributoriAutomatici){
+            DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
+            if (!distributore.isAttivo())
+                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+            else {
+                nuovoBiglietto = new Biglietto(distributore);
+            }
+        } else {
+            nuovoBiglietto = new Biglietto(puntoEmissione);
         }
+        this.save(nuovoBiglietto);
     }
 
     public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
-        if (!puntoEmissione.isAttivo())
-            throw new RuntimeException("Impossibile acquistare l'abbonamento, distributore automatico non in funzione");
+        Emissione nuovoAbbonamento;
+        if (puntoEmissione instanceof DistributoriAutomatici){
+            DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
+            if (!distributore.isAttivo())
+                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+            else {
+                nuovoAbbonamento = new Abbonamento(distributore, tessera, tipo);
+            }
+        } else {
+            nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
+        }
+
         if (tessera.getDataScadenza().isBefore(LocalDate.now()))
             throw new RuntimeException("Impossibile acquistare l'abbonamento, tessera scaduta il " + tessera.getDataScadenza());
         else {
-            Emissione nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
             this.save(nuovoAbbonamento);
         }
     }

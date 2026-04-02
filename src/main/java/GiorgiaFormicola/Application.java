@@ -1,13 +1,18 @@
 package GiorgiaFormicola;
 
-import GiorgiaFormicola.dao.EmissioniDAO;
-import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
-import GiorgiaFormicola.dao.PuntiEmissioneDAO;
+import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
+import GiorgiaFormicola.entities.Tessera;
+import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.enums.TipoDiUtente;
+import GiorgiaFormicola.exceptions.NotFoundException;
+import GiorgiaFormicola.exceptions.NotFoundUserException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
@@ -90,7 +95,7 @@ public class Application {
         PuntiEmissioneDAO puntiEmissioneDAO = new PuntiEmissioneDAO(entityManager);
 
         DistributoriAutomatici distributoriAutomatici1 = new DistributoriAutomatici(true);
-        RivenditoriAutorizzati rivenditoriAutorizzati1 = new RivenditoriAutorizzati(true);
+        RivenditoriAutorizzati rivenditoriAutorizzati1 = new RivenditoriAutorizzati();
 
 //        puntiEmissioneDAO.savePuntoEmissione(distributoriAutomatici1);
 //        puntiEmissioneDAO.savePuntoEmissione(rivenditoriAutorizzati1);
@@ -103,15 +108,21 @@ public class Application {
 
 //        puntiEmissioneDAO.deletePuntoEmissioneById(UUID.fromString("75b2777a-2e44-4511-b0a6-400ce0819a13"));
 
-        /*try {
-            puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
-        } catch (NotFoundException e){
-            System.out.println(e.getMessage());
-        }
-        }*/
+//        try {
+//            puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));
+//        } catch (NotFoundException e){
+//            System.out.println(e.getMessage());
+//        }
 
-        puntiEmissioneDAO.findPuntiEmissioneAttivi();
-        /* puntiEmissioneDAO.changeStatoPuntiEmissione(UUID.fromString("849f959b-3f64-4bd5-b6b3-0f94fffcd20a"));*/
+
+//        puntiEmissioneDAO.findPuntiEmissioneAttivi();
+
+//        try {
+//            puntiEmissioneDAO.changeStatoDistributoriAutomatici(UUID.fromString("374b0324-f952-4d41-8e30-fadd6921a6f0"));
+//
+//        } catch (NotFoundException e){
+//            System.out.println(e.getMessage());
+//        }
 
         //TEST DAO Emissioni
         EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
@@ -128,6 +139,27 @@ public class Application {
      /*   Emissione bigliettoFromDB = emissioniDAO.findById("7afe097e-b900-41b0-a57e-64af3b9526e6");
         MezzoDiTrasporto mezzoFromDB = mezziDAO.findById("76246ff1-f859-4320-a520-97073d7ebea6");
         emissioniDAO.utilizzaEmissione(bigliettoFromDB, mezzoFromDB);*/
+
+
+
+        //TEST DAO PER TESSERA
+        Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abc123");
+        Tessera tessera = new Tessera(3L);
+        TessereDAO tessereDAO = new TessereDAO(entityManager);
+        UtenteDAO utenteDAO = new UtenteDAO(entityManager);
+//        utenteDAO.save(utente);
+
+//        try {
+//            tessereDAO.createNuovaTessera(2, "abc123");
+//        } catch (NotFoundUserException e){
+//            System.out.println(e.getMessage());
+//        }
+
+//        tessereDAO.deleteTesseraById(UUID.fromString("cff31457-dbaf-4e65-b4a0-9f22d7b6a49f"));
+//        tessereDAO.rinnovaTessera(1);
+
+        tessereDAO.checkScadenzaTessera(1);
+
         System.out.println("Hello World!");
     }
 }

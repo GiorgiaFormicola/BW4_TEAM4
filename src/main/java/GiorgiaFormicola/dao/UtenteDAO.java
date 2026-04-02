@@ -22,7 +22,7 @@ public class UtenteDAO {
             System.out.println("Utente creato con successo!");
         } catch (Exception e) {
             if (t.isActive()) t.rollback();
-            System.err.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");
+            System.out.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");
         }
     }
 
