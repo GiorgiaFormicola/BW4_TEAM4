@@ -2,9 +2,7 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Tessera;
 import GiorgiaFormicola.entities.Utente;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.NotFoundTesseraException;
-import GiorgiaFormicola.exceptions.NotFoundUserException;
+import GiorgiaFormicola.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
@@ -28,8 +26,9 @@ public class TessereDAO {
         Tessera tesseraEsistente = this.findTesseraByNumeroTessera(nuovaTessera.getNumeroTessera());
 
         if (tesseraEsistente != null){
-            System.out.println("Numero tessera gia esistente " + nuovaTessera.getNumeroTessera());
-            return;
+            throw new TesseraGiaEsistente();
+//            System.out.println("Numero tessera gia esistente " + nuovaTessera.getNumeroTessera());
+//            return;
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -96,58 +95,117 @@ public class TessereDAO {
         System.out.println("La tessera con id " + tesseraId + " è stata cancellata");
     }
 
-    public void createNuovaTessera(long numeroTessera, String codiceFiscale) {
-
-        EntityTransaction transaction = entityManager.getTransaction();
-
-        TypedQuery<Utente> query = entityManager.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :codiceFiscale", Utente.class);
-
-        query.setParameter("codiceFiscale", codiceFiscale);
-
-        List<Utente> risultatoLista = query.getResultList();
-
-        if (risultatoLista.isEmpty()){
-            throw new NotFoundUserException(codiceFiscale);
+    public void createNuovaTessera(long numeroTessera, Utente utente){
+        if (utente.getTessera() != null){
+            throw new UtenteAssociatoATessera();
         }
 
-//        if (!risultatoLista.isEmpty()) {
-//            System.out.println("Esiste gia una tessera con codice fiscale " + codiceFiscale);
-//            return;
-//        } else {
-//            System.out.println("Nessun utente trovato con codice fiscale " + codiceFiscale);
-//        }
+        Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
 
-        Utente utente = risultatoLista.get(0);
+        Tessera tesseraDaSalvare = new Tessera(numeroTessera, utente);
 
-        TypedQuery<Tessera> queryTessera = entityManager.createQuery("SELECT t FROM Tessera t WHERE t.utente = :utente", Tessera.class);
-        queryTessera.setParameter("utente", utente);
-
-        if (!queryTessera.getResultList().isEmpty()){
-            System.out.println("L'utente ha gia una tessera");
-            return;
+        try {
+            this.saveTessera(tesseraDaSalvare);
+        } catch (TesseraGiaEsistente e){
+            System.err.println(e.getMessage());
         }
-
-        Tessera numeroTesseraEsistente = this.findTesseraByNumeroTessera(numeroTessera);
-
-        if (numeroTesseraEsistente != null) {
-            System.out.println("Esiste gia una tessera con numero tessera " + numeroTessera);
-            return;
-        }
-
-        Tessera tessera = new Tessera(numeroTessera);
-
-        tessera.setUtente(utente);
-
-        LocalDate oggi = LocalDate.now();
-        tessera.setDataEmissione(oggi);
-        tessera.setDataScadenza(oggi.plusYears(1));
-
-        transaction.begin();
-        entityManager.persist(tessera);
-        transaction.commit();
-
-        System.out.println("Tessera creata per utente " + codiceFiscale + " con scadenza: " + tessera.getDataScadenza());
     }
+
+//    public void createNuovaTessera(long numeroTessera, String codiceFiscale) {
+//
+//        EntityTransaction transaction = entityManager.getTransaction();
+//
+//        TypedQuery<Utente> query = entityManager.createQuery("SELECT u FROM Utente u WHERE u.codiceFiscale = :codiceFiscale", Utente.class);
+//
+//        query.setParameter("codiceFiscale", codiceFiscale);
+//
+//        List<Utente> risultatoLista = query.getResultList();
+//
+//        if (risultatoLista.isEmpty()){
+//            throw new NotFoundUserException(codiceFiscale);
+//        }
+//
+//        Utente utente = risultatoLista.get(0);
+//
+//        TypedQuery<Tessera> queryTessera = entityManager.createQuery("SELECT t FROM Tessera t WHERE t.utente = :utente", Tessera.class);
+//        queryTessera.setParameter("utente", utente);
+//
+//        if (!queryTessera.getResultList().isEmpty()){
+//            System.out.println("L'utente ha gia una tessera");
+//            return;
+//        }
+//
+//        Tessera numeroTesseraEsistente = this.findTesseraByNumeroTessera(numeroTessera);
+//
+//        if (numeroTesseraEsistente != null) {
+//            System.out.println("Esiste gia una tessera con numero tessera " + numeroTessera);
+//            return;
+//        }
+//
+//        Tessera tessera = new Tessera(numeroTessera, utente);
+//
+//        tessera.setUtente(utente);
+//
+//        LocalDate oggi = LocalDate.now();
+//        tessera.setDataEmissione(oggi);
+//        tessera.setDataScadenza(oggi.plusYears(1));
+//
+//        transaction.begin();
+//        entityManager.persist(tessera);
+//        transaction.commit();
+//
+//        System.out.println("Tessera creata per utente " + codiceFiscale + " con scadenza: " + tessera.getDataScadenza());
+//    }
+
+//    public void createNuovaTessera(Tessera nuovaTessera){
+//        EntityTransaction transaction = entityManager.getTransaction();
+//
+//        Tessera numeroTesseraEsistente = this.findTesseraByNumeroTessera(nuovaTessera.getNumeroTessera());
+//
+//        if (numeroTesseraEsistente != null){
+//            System.out.println("Esiste gia una tessera con numero tessera " + nuovaTessera.getNumeroTessera());
+//            return;
+//        }
+//
+//        Utente utente = nuovaTessera.getUtente();
+//
+//        if (utente == null){
+//            System.out.println("Nessun utente associato alla tessera");
+//            return;
+//        }
+//
+//        if (utente.getId() == null){
+//            System.out.println("Utente non salvato nel DB");
+//            return;
+//        }
+//
+//        Utente utentePresente = entityManager.find(Utente.class, utente.getId());
+//
+//        if (utentePresente == null){
+//            throw new NotFoundUserException("Utente non trovato con id" + utente.getId());
+//        }
+//
+//        TypedQuery<Tessera> queryTessera = entityManager.createQuery("SELECT t FROM Tessera t WHERE t.utente = :utente", Tessera.class);
+//
+//        queryTessera.setParameter("utente", utentePresente);
+//
+//        if (!queryTessera.getResultList().isEmpty()){
+//            System.out.println("L'utente ha gia una tessera");
+//            return;
+//        }
+//
+//        nuovaTessera.setUtente(utentePresente);
+//
+//        LocalDate oggi = LocalDate.now();
+//        nuovaTessera.setDataEmissione(oggi);
+//        nuovaTessera.setDataScadenza(oggi.plusYears(1));
+//
+//        transaction.begin();
+//        entityManager.persist(nuovaTessera);
+//        transaction.commit();
+//
+//        System.out.println("Tessera creata: " + nuovaTessera);
+//    }
 
     public void rinnovaTessera(long numeroTessera){
         EntityTransaction transaction = entityManager.getTransaction();

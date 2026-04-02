@@ -1,6 +1,7 @@
 package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Tratta;
+import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
@@ -61,6 +62,16 @@ public class TrattaDAO {
                     .getSingleResult();
         } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public Tratta getTrattaById(UUID trattaId){
+        Tratta found = em.find(Tratta.class, trattaId);
+        if (found == null){
+            throw new NotFoundException(trattaId);
+        } else {
+            System.out.println("La tratta con id " + trattaId + " è stata trovata");
+            return found;
         }
     }
 
