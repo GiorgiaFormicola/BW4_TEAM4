@@ -36,6 +36,9 @@ public class Tessera {
         this.utente = utente;
     }
 
+    public Tessera(long numeroTessera) {
+    }
+
     public Long getNumeroTessera() {
         return numeroTessera;
     }
