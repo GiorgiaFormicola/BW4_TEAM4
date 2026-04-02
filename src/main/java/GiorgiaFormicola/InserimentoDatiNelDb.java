@@ -25,8 +25,13 @@ public class InserimentoDatiNelDb {
 //        -------------------- UTENTE --------------------
         UtenteDAO utenteDAO = new UtenteDAO(entityManager);
         Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abcde");
+        Utente utente2 = new Utente(TipoDiUtente.AMMINISTRATORE, "abcde12345");
+        Utente utente3 = new Utente(TipoDiUtente.AMMINISTRATORE, "abcdef123456");
+        Utente utente4 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abcdefg1234567");
 //        try {
-//            utenteDAO.save(utente);
+//            utenteDAO.save(utente2);
+//            utenteDAO.save(utente3);
+//            utenteDAO.save(utente4);
 //        } catch (UserAlreadyEnteredException e){
 //            System.out.println(e.getMessage());
 //        }
@@ -67,9 +72,9 @@ public class InserimentoDatiNelDb {
 //        mezziDiTrasportoDAO.addMezzo("tram");
 
 //        -------------------- TRATTA --------------------
-        TrattaDAO trattaDAO = new TrattaDAO(entityManager);
-        Tratta tratta = new Tratta("Milano", "Bologna", LocalTime.now());
-        trattaDAO.save(tratta);
+//        TrattaDAO trattaDAO = new TrattaDAO(entityManager);
+//        Tratta tratta = new Tratta("Milano", "Bologna", LocalTime.now());
+//        trattaDAO.save(tratta);
 
 
 

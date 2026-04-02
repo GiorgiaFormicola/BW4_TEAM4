@@ -18,6 +18,7 @@
         <class>GiorgiaFormicola.entities.Tessera</class>
         <class>GiorgiaFormicola.entities.Utente</class>
         <class>GiorgiaFormicola.entities.Tratta</class>
+        <class>GiorgiaFormicola.entities.TrattaMezzo</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:postgresql://localhost:5432/public_transport_company"/>
