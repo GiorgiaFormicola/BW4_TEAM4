@@ -2,6 +2,7 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.*;
 import GiorgiaFormicola.exceptions.MezzoNonInServizioException;
+import GiorgiaFormicola.exceptions.NessunElementoTrovatoException;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -25,7 +26,7 @@ public class MezziDiTrasportoDAO {
         Servizio primoServizio = new Servizio(nuovoMezzo);
         entityManager.persist(primoServizio);
         transaction.commit();
-        System.out.println(nuovoMezzo.getClass().getSimpleName() + " " + nuovoMezzo.getId() + " correttamente aggiunto al parco mezzi ed operativo.");
+        System.out.println("\n" + nuovoMezzo.getClass().getSimpleName() + " " + nuovoMezzo.getId() + " correttamente aggiunto al parco mezzi ed operativo.");
     }
 
     public MezzoDiTrasporto findById(String idMezzo) {
@@ -76,61 +77,65 @@ public class MezziDiTrasportoDAO {
     }
 
     public void updateOperativitàAttualeMezzo(String idMezzo, String operatività, String descrizione) {
-        OperativitàMezzo found = this.getOperativitàAttualeMezzo(idMezzo);
-        if (found instanceof Servizio && operatività.equals("servizio") || found instanceof Manutenzione && operatività.equals("manutenzione"))
-            System.out.println("Mezzo " + idMezzo + " già in " + operatività + ".");
-        else {
-            Query updateQuery = entityManager.createQuery("UPDATE OperativitàMezzo o SET o.dataFine = CURRENT_DATE WHERE o.mezzo.id = :idMezzo AND o.dataFine IS NULL ");
-            updateQuery.setParameter("idMezzo", UUID.fromString(idMezzo));
-            OperativitàMezzo nuovaOperatività;
-            if (operatività.equals("servizio")) {
-                nuovaOperatività = new Servizio(found.getMezzo());
-            } else {
-                nuovaOperatività = new Manutenzione(found.getMezzo(), descrizione);
+        try {
+            OperativitàMezzo found = this.getOperativitàAttualeMezzo(idMezzo);
+            if (found instanceof Servizio && operatività.equals("servizio") || found instanceof Manutenzione && operatività.equals("manutenzione"))
+                System.err.println("Impossibile effettuare la modifica dell'operatività. Mezzo " + idMezzo + " già in " + operatività + ".");
+            else {
+                Query updateQuery = entityManager.createQuery("UPDATE OperativitàMezzo o SET o.dataFine = CURRENT_DATE WHERE o.mezzo.id = :idMezzo AND o.dataFine IS NULL ");
+                updateQuery.setParameter("idMezzo", UUID.fromString(idMezzo));
+                OperativitàMezzo nuovaOperatività;
+                if (operatività.equals("servizio")) {
+                    nuovaOperatività = new Servizio(found.getMezzo());
+                } else {
+                    nuovaOperatività = new Manutenzione(found.getMezzo(), descrizione);
+                }
+                EntityTransaction transaction = entityManager.getTransaction();
+                transaction.begin();
+                updateQuery.executeUpdate();  //UPDATE DATA FINE ULTIMA OPERATIVITA'
+                entityManager.persist(nuovaOperatività); //SALVATAGGIO NUOVA OPERATIVITA'
+                transaction.commit();
+                System.out.println("Operatività del mezzo " + idMezzo + " modificata con successo. Mezzo attualmente in " + (operatività.equals("servizio") ? "servizio" : "manutenzione"));
             }
-            EntityTransaction transaction = entityManager.getTransaction();
-            transaction.begin();
-            updateQuery.executeUpdate();  //UPDATE DATA FINE ULTIMA OPERATIVITA'
-            entityManager.persist(nuovaOperatività); //SALVATAGGIO NUOVA OPERATIVITA'
-            transaction.commit();
-            System.out.println("Mezzo " + idMezzo + " in " + (operatività.equals("servizio") ? "servizio" : "manutenzione"));
+        } catch (NotFoundException e) {
+            System.err.println("ERRORE: " + e.getMessage());
         }
     }
 
 
     public List<Manutenzione> getManutenzioniMezzo(String idMezzo) {
-        TypedQuery<Manutenzione> query = entityManager.createQuery("SELECT m FROM Manutenzione m WHERE m.mezzo.id = :idMezzo", Manutenzione.class);
+        TypedQuery<Manutenzione> query = entityManager.createQuery("SELECT m FROM Manutenzione m WHERE m.mezzo.id = :idMezzo ORDER BY m.dataFine DESC", Manutenzione.class);
         query.setParameter("idMezzo", UUID.fromString(idMezzo));
         List<Manutenzione> risultato = query.getResultList();
         if (risultato.isEmpty()) {
-            throw new RuntimeException("Il mezzo " + idMezzo + " non è mai stato in manutenzione");
+            throw new NessunElementoTrovatoException();
         } else {
             return risultato;
         }
     }
 
     public List<Servizio> getServiziMezzo(String idMezzo) {
-        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.mezzo.id = :idMezzo", Servizio.class);
+        TypedQuery<Servizio> query = entityManager.createQuery("SELECT s FROM Servizio s WHERE s.mezzo.id = :idMezzo ORDER BY s.dataFine DESC", Servizio.class);
         query.setParameter("idMezzo", UUID.fromString(idMezzo));
         List<Servizio> risultato = query.getResultList();
         if (risultato.isEmpty()) {
-            throw new RuntimeException("Mezzo " + idMezzo + " non trovato");
+            throw new NessunElementoTrovatoException();
         } else {
             return risultato;
         }
     }
 
     public List<MezzoDiTrasporto> getMezziInServizio() {
-        TypedQuery<MezzoDiTrasporto> query = entityManager.createQuery("SELECT o.mezzo FROM OperativitàMezzo o WHERE o.dataFine IS NULL AND o.class = Servizio", MezzoDiTrasporto.class);
+        TypedQuery<MezzoDiTrasporto> query = entityManager.createQuery("SELECT o.mezzo FROM OperativitàMezzo o WHERE o.dataFine IS NULL AND o.class = Servizio ORDER BY o.dataFine DESC", MezzoDiTrasporto.class);
         List<MezzoDiTrasporto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun mezzo in servizio");
+        if (found.isEmpty()) throw new NessunElementoTrovatoException();
         else return found;
     }
 
     public List<MezzoDiTrasporto> getMezziInManutenzione() {
-        TypedQuery<MezzoDiTrasporto> query = entityManager.createQuery("SELECT o.mezzo FROM OperativitàMezzo o WHERE o.dataFine IS NULL AND o.class = Manutenzione", MezzoDiTrasporto.class);
+        TypedQuery<MezzoDiTrasporto> query = entityManager.createQuery("SELECT o.mezzo FROM OperativitàMezzo o WHERE o.dataFine IS NULL AND o.class = Manutenzione ORDER BY o.dataFine DESC", MezzoDiTrasporto.class);
         List<MezzoDiTrasporto> found = query.getResultList();
-        if (found.isEmpty()) throw new RuntimeException("Nessun mezzo in manutenzione");
+        if (found.isEmpty()) throw new NessunElementoTrovatoException();
         else return found;
     }
 

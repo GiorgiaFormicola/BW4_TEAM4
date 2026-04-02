@@ -22,7 +22,7 @@ public class TrattaDAO {
             Tratta esistente = findByPartenzaECapolinea(t.getPartenza(), t.getCapolinea());
 
             if (esistente != null) {
-                System.err.println("-- ATTENZIONE: La tratta da '" + t.getPartenza() +
+                System.err.println("\nERRORE : La tratta da '" + t.getPartenza() +
                         "' a '" + t.getCapolinea() + "' esiste già con ID: " + esistente.getId());
                 return;
             }
@@ -30,7 +30,7 @@ public class TrattaDAO {
             tdt.begin();
             em.persist(t);
             tdt.commit();
-            System.out.println("Tratta creata con successo!");
+            System.out.println("\n Tratta aggiunta con successo.");
 
         } catch (Exception e) {
             if (tdt.isActive()) tdt.rollback();
@@ -65,16 +65,15 @@ public class TrattaDAO {
         }
     }
 
-    public Tratta getTrattaById(UUID trattaId){
+    public Tratta getTrattaById(String trattaId) {
         Tratta found = em.find(Tratta.class, trattaId);
-        if (found == null){
+        if (found == null) {
             throw new NotFoundException(trattaId);
         } else {
             System.out.println("La tratta con id " + trattaId + " è stata trovata");
             return found;
         }
     }
-
 
 
 }

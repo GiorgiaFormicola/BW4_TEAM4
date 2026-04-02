@@ -1,9 +1,6 @@
 package GiorgiaFormicola;
 
-import GiorgiaFormicola.dao.EmissioniDAO;
-import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
-import GiorgiaFormicola.dao.PuntiEmissioneDAO;
-import GiorgiaFormicola.dao.UtenteDAO;
+import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.*;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.*;
@@ -13,6 +10,7 @@ import jakarta.persistence.Persistence;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,6 +23,7 @@ public class TestPerScanner {
     private static final MezziDiTrasportoDAO mezziDAO = new MezziDiTrasportoDAO(entityManager);
     private static final UtenteDAO utentiDAO = new UtenteDAO(entityManager);
     /*private static final TesseraDAO tessereDAO = new TesseraDAO(entityManager);*/  //TODO
+    private static final TrattaDAO tratteDAO = new TrattaDAO(entityManager);
 
     public static void main(String[] args) {
         // SCELTA TIPO DI UTENTE DA SIMULARE
@@ -602,7 +601,7 @@ public class TestPerScanner {
                                                     int mese2 = Integer.parseInt(scanner.nextLine());
                                                     System.out.println("\n Inserire il giorno desiderato:");
                                                     int giorno2 = Integer.parseInt(scanner.nextLine());
-                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    LocalDate dataFine = LocalDate.of(anno2, mese2, giorno2);
                                                     System.out.println("EMISSIONI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleEmissioniInArcoTemporale(dataInizio, dataFine));
                                                 }
                                             } else if (tipoEmissione == 2) {
@@ -629,7 +628,7 @@ public class TestPerScanner {
                                                     int mese2 = Integer.parseInt(scanner.nextLine());
                                                     System.out.println("\n Inserire il giorno desiderato:");
                                                     int giorno2 = Integer.parseInt(scanner.nextLine());
-                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    LocalDate dataFine = LocalDate.of(anno2, mese2, giorno2);
                                                     System.out.println("BIGLIETTI EMESSI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleBigliettiInArcoTemporale(dataInizio, dataFine));
                                                 }
                                             } else {
@@ -656,7 +655,7 @@ public class TestPerScanner {
                                                     int mese2 = Integer.parseInt(scanner.nextLine());
                                                     System.out.println("\n Inserire il giorno desiderato:");
                                                     int giorno2 = Integer.parseInt(scanner.nextLine());
-                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    LocalDate dataFine = LocalDate.of(anno2, mese2, giorno2);
                                                     System.out.println("ABBONAMENTI EMESSI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleAbbonamentiInArcoTemporale(dataInizio, dataFine));
                                                 }
                                             }
@@ -678,7 +677,7 @@ public class TestPerScanner {
                                 System.out.println("\n Inserire l'id del punto di emissione da verificare");
                                 try {
                                     String idPunto = scanner.nextLine();
-                                    PuntiEmissione punto = puntiDAO.getPuntoEmissioneById(idPunto);
+                                    puntiDAO.getPuntoEmissioneById(idPunto);
                                     System.out.println("\nChe tipo di emissione vuoi verificare?");
                                     System.out.println("1.Tutte");
                                     System.out.println("2.Solo biglietti");
@@ -715,7 +714,7 @@ public class TestPerScanner {
                                 System.out.println("\n Inserire l'id del mezzo da verificare");
                                 try {
                                     String idMezzo = scanner.nextLine();
-                                    MezzoDiTrasporto mezzo = mezziDAO.findById(idMezzo);
+                                    mezziDAO.findById(idMezzo);
                                     System.out.println("\nChe periodo vuoi verificare?");
                                     System.out.println("1.In una specifica data");
                                     System.out.println("2.Prima di una specifica data");
@@ -754,7 +753,7 @@ public class TestPerScanner {
                                                 int mese2 = Integer.parseInt(scanner.nextLine());
                                                 System.out.println("\n Inserire il giorno desiderato:");
                                                 int giorno2 = Integer.parseInt(scanner.nextLine());
-                                                LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                LocalDate dataFine = LocalDate.of(anno2, mese2, giorno2);
                                                 System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getBigliettiVidimatiInUnArcoTemporaleSuUnMezzo(dataInizio, dataFine, idMezzo));
                                             }
                                         }
@@ -780,9 +779,193 @@ public class TestPerScanner {
 
             //GESTIONE PARCO MEZZI
             if (areaPortale == 3) {
+                int operazione;
+                while (true) {
+                    System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA SVOLGERE DIGITANDO IL RISPETTIVO NUMERO");
+                    System.out.println("1.Aggiungi un mezzo al parco mezzi");
+                    System.out.println("2.Ottieni l'operatività' di un mezzo");
+                    System.out.println("3.Imposta l'operatività' di un mezzo a 'in servizio'");
+                    System.out.println("4.Imposta l'operatività' di un mezzo a 'in manutenzione'");
+                    System.out.println("5.Visiona i mezzi in servizio");
+                    System.out.println("6.Visiona i mezzi in manutenzione");
+                    System.out.println("7.Visiona i periodi di manutenzione di un mezzo");
+                    System.out.println("8.Visiona i periodi di servizio di un mezzo");
+                    System.out.println("0.ESCI DALLA SIMULAZIONE");
+                    try {
+                        operazione = Integer.parseInt(scanner.nextLine());
+                        if (operazione == 0) break;
+                        if (operazione < 1 || operazione > 8)
+                            System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+
+                        //OPERAZIONE 1
+                        if (operazione == 1) {
+                            System.out.println("\n Che tipo di mezzo vuoi aggiungere?");
+                            System.out.println("1.Autobus");
+                            System.out.println("2.Tram");
+                            System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                            int tipoMezzo;
+                            try {
+                                tipoMezzo = Integer.parseInt(scanner.nextLine());
+                                if (tipoMezzo == 0) continue;
+                                if (tipoMezzo < 1 || tipoMezzo > 2)
+                                    System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                else {
+                                    if (tipoMezzo == 1) {
+                                        mezziDAO.addMezzo("autobus");
+                                    } else {
+                                        mezziDAO.addMezzo("tram");
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                            }
+                        }
+
+                        //OPERAZIONE 2
+                        if (operazione == 2) {
+                            System.out.println("\nInserire l'id del mezzo interessato");
+                            try {
+                                String idMezzo = scanner.nextLine();
+                                OperativitàMezzo operativitaAttuale = mezziDAO.getOperativitàAttualeMezzo(idMezzo);
+                                if (operativitaAttuale instanceof Servizio)
+                                    System.out.println("\nIl mezzo " + idMezzo + " è attualmente in servizio");
+                                else {
+                                    System.out.println("\nIl mezzo " + idMezzo + " è in manutenzione dal " + operativitaAttuale.getDataInizio());
+                                    Manutenzione manutenzione = (Manutenzione) operativitaAttuale;
+                                    System.out.println("DESCRIZIONE MANUTENZIONE: " + manutenzione.getDescrizione());
+                                }
+                            } catch (IllegalArgumentException | NotFoundException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                            }
+                        }
+
+                        //OPERAZIONE 3
+                        if (operazione == 3) {
+                            System.out.println("\nInserire l'id del mezzo interessato");
+                            try {
+                                String idMezzo = scanner.nextLine();
+                                mezziDAO.updateOperativitàAttualeMezzo(idMezzo, "servizio", "");
+                            } catch (IllegalArgumentException e) {
+                                System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                            }
+                        }
+
+                        //OPERAZIONE 4
+                        if (operazione == 4) {
+                            System.out.println("\nInserire l'id del mezzo interessato");
+                            try {
+                                String idMezzo = scanner.nextLine();
+                                System.out.println("\nInserire una descrizione per la manutenzione");
+                                String descrizione = scanner.nextLine();
+                                mezziDAO.updateOperativitàAttualeMezzo(idMezzo, "manutenzione", descrizione);
+                            } catch (IllegalArgumentException e) {
+                                System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                            }
+                        }
+
+                        //OPERAZIONE 5
+                        if (operazione == 5) {
+                            try {
+                                System.out.println("\nLISTA MEZZI IN SERVIZIO");
+                                mezziDAO.getMezziInServizio().forEach(System.out::println);
+                            } catch (NessunElementoTrovatoException e) {
+                                System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 6
+                        if (operazione == 6) {
+                            try {
+                                System.out.println("\nLISTA MEZZI IN MANUTEZIONE");
+                                mezziDAO.getMezziInManutenzione().forEach(mezzo -> System.out.println((mezzo instanceof Autobus ? "Autobus " : "Tram ") + mezzo.getId()));
+                            } catch (NessunElementoTrovatoException e) {
+                                System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 7
+                        if (operazione == 7) {
+                            System.out.println("\nInserire l'id del mezzo interessato");
+                            try {
+                                String idMezzo = scanner.nextLine();
+                                System.out.println("\nLISTA MANUTENZIONI MEZZO " + idMezzo);
+                                mezziDAO.getManutenzioniMezzo(idMezzo).forEach(manutenzione -> System.out.println("Manutenzione " + manutenzione.getId() + " [" + manutenzione.getDataInizio() + " | " + (manutenzione.getDataFine() == null ? "in corso" : manutenzione.getDataFine()) + "] DESCRIZIONE: " + manutenzione.getDescrizione()));
+                            } catch (IllegalArgumentException | NessunElementoTrovatoException e) {
+                                System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                            }
+                        }
+
+                        //OPERAZIONE 8
+                        if (operazione == 8) {
+                            System.out.println("\nInserire l'id del mezzo interessato");
+                            try {
+                                String idMezzo = scanner.nextLine();
+                                System.out.println("\nLISTA SERVIZI MEZZO " + idMezzo);
+                                mezziDAO.getServiziMezzo(idMezzo).forEach(servizio -> System.out.println("Servizio " + servizio.getId() + " [" + servizio.getDataInizio() + " | " + (servizio.getDataFine() == null ? "in corso" : servizio.getDataFine()) + "]"));
+                            } catch (IllegalArgumentException | NessunElementoTrovatoException e) {
+                                System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                            }
+                        }
+
+                    } catch (NumberFormatException e) {
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    }
+                }
             }
 
+            //GESTIONE TRATTE
+            if (areaPortale == 4) {
+                int operazione;
+                while (true) {
+                    System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA SVOLGERE DIGITANDO IL RISPETTIVO NUMERO");
+                    System.out.println("1.Aggiungi una nuova tratta");
+                    System.out.println("2.Assegna una tratta ad un mezzo");
+                    System.out.println("3.Aggiorna percorrenza tratta effettuata");
+                    System.out.println("4.Ottieni il numero di volte che una tratta è stata percorsa da uno specifico mezzo");
+                    System.out.println("5.Ottieni la media del tempo di percorrenza di una tratta da parte di diversi mezzi");
+                    System.out.println("6.Ottieni il tempo medio effettivo di percorrenza di una tratta da parte di un mezzo specifico");
+                    System.out.println("0.ESCI DALLA SIMULAZIONE");
+                    try {
+                        operazione = Integer.parseInt(scanner.nextLine());
+                        if (operazione == 0) break;
+                        if (operazione < 1 || operazione > 6)
+                            System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
 
+                        //OPERAZIONE 1
+                        if (operazione == 1) {
+                            System.out.println("\nInserire il punto di partenza della nuova tratta:");
+                            String partenza = scanner.nextLine();
+                            if (partenza.isEmpty()) System.err.println("ERRORE: Inserimento non valido");
+                            else {
+                                System.out.println("\nInserire il capolinea della nuova tratta");
+                                String capolinea = scanner.nextLine();
+                                if (capolinea.isEmpty()) System.err.println("ERRORE: Inserimento non valido");
+                                else {
+                                    System.out.println("\nInserire la durata della percorrenza prevista:");
+                                    System.out.println("\nInserire il numero di ore");
+                                    try {
+                                        int ore = Integer.parseInt(scanner.nextLine());
+                                        System.out.println("\nInserire il numero di minuti");
+                                        int minuti = Integer.parseInt(scanner.nextLine());
+                                        LocalTime percorrenzaPrevista = LocalTime.of(ore, minuti);
+                                        tratteDAO.save(new Tratta(partenza, capolinea, percorrenzaPrevista));
+                                    } catch (NumberFormatException e) {
+                                        System.err.println("\nERRORE: Inserimento non valido, digitare un numero intero");
+                                    }
+                                }
+                            }
+                        }
+
+                        //OPERAZIONE 2
+                        if (operazione == 2) {
+                            TrattaMezzo tratta = new TrattaMezzo()
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    }
+                }
+            }
         }
     }
 }
