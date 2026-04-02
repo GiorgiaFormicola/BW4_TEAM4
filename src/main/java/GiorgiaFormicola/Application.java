@@ -3,11 +3,16 @@ package GiorgiaFormicola;
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
+import GiorgiaFormicola.entities.Tessera;
 import GiorgiaFormicola.entities.Utente;
 import GiorgiaFormicola.enums.TipoDiUtente;
+import GiorgiaFormicola.exceptions.NotFoundException;
+import GiorgiaFormicola.exceptions.NotFoundUserException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");

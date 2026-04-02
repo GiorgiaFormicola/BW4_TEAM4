@@ -36,20 +36,15 @@ public class Tessera {
         this.utente = utente;
     }
 
+    public Tessera(long numeroTessera) {
+    }
+
     public Long getNumeroTessera() {
         return numeroTessera;
     }
 
-    public void setNumeroTessera(Long numeroTessera) {
-        this.numeroTessera = numeroTessera;
-    }
-
     public LocalDate getDataEmissione() {
         return dataEmissione;
-    }
-
-    public void setDataEmissione(LocalDate dataEmissione) {
-        this.dataEmissione = dataEmissione;
     }
 
     public UUID getId() {
@@ -58,10 +53,6 @@ public class Tessera {
 
     public Utente getUtente() {
         return utente;
-    }
-
-    public void setUtente(Utente utente) {
-        this.utente = utente;
     }
 
     public LocalDate getDataScadenza() {
