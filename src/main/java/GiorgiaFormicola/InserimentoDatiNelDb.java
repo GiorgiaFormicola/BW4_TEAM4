@@ -2,16 +2,12 @@ package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.*;
-import GiorgiaFormicola.enums.TipoAbbonamento;
 import GiorgiaFormicola.enums.TipoDiUtente;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.UserAlreadyEnteredException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class InserimentoDatiNelDb {
 
@@ -50,7 +46,7 @@ public class InserimentoDatiNelDb {
         DistributoriAutomatici distributoriAutomatici = new DistributoriAutomatici(false);
         PuntiEmissioneDAO puntiEmissioneDAO = new PuntiEmissioneDAO(entityManager);
 
-        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById(UUID.fromString("25dab02d-f0aa-4f87-bdfd-2134dafd9302"));
+        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById("25dab02d-f0aa-4f87-bdfd-2134dafd9302");
 //        puntiEmissioneDAO.savePuntoEmissione(distributoriAutomatici);
 
 //        -------------------- EMISSIONI --------------------
@@ -70,7 +66,6 @@ public class InserimentoDatiNelDb {
         TrattaDAO trattaDAO = new TrattaDAO(entityManager);
         Tratta tratta = new Tratta("Milano", "Bologna", LocalTime.now());
         trattaDAO.save(tratta);
-
 
 
 //        -------------------- TESSERA --------------------
