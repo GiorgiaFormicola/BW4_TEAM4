@@ -3,16 +3,9 @@ package GiorgiaFormicola;
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
-import GiorgiaFormicola.entities.Tessera;
-import GiorgiaFormicola.entities.Utente;
-import GiorgiaFormicola.enums.TipoDiUtente;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.NotFoundUserException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
@@ -169,8 +162,8 @@ public class Application {
         mezziDAO.addMezzo("tram");*/
 //        mezziDAO.updateOperativitàAttualeMezzo("765997dd-9881-432d-9b93-f336e9e8b164", "manutenzione", "prova update");
 
-        Utente amministratore = new Utente(TipoDiUtente.AMMINISTRATORE, "provaadmin");
-        utenteDAO.save(amministratore);
+        /*Utente amministratore = new Utente(TipoDiUtente.AMMINISTRATORE, "provaadmin");
+        utenteDAO.save(amministratore);*/
 
     }
 }

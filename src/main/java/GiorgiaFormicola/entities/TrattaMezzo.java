@@ -31,27 +31,48 @@ public class TrattaMezzo {
     public TrattaMezzo() {
     }
 
-    public TrattaMezzo(MezzoDiTrasporto mezzo, Tratta tratta, LocalTime percorrenza, LocalDate dataInizio) {
+    public TrattaMezzo(MezzoDiTrasporto mezzo, Tratta tratta, LocalDate dataInizio) {
         this.mezzo = mezzo;
         this.tratta = tratta;
-        this.percorrenza = percorrenza;
         this.dataInizio = dataInizio;
     }
 
     // getter e setter
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public MezzoDiTrasporto getMezzo() { return mezzo; }
-    public void setMezzo(MezzoDiTrasporto mezzo) { this.mezzo = mezzo; }
+    public MezzoDiTrasporto getMezzo() {
+        return mezzo;
+    }
 
-    public Tratta getTratta() { return tratta; }
-    public void setTratta(Tratta tratta) { this.tratta = tratta; }
+    public void setMezzo(MezzoDiTrasporto mezzo) {
+        this.mezzo = mezzo;
+    }
 
-    public LocalTime getPercorrenza() { return percorrenza; }
-    public void setPercorrenza(LocalTime percorrenza) { this.percorrenza = percorrenza; }
+    public Tratta getTratta() {
+        return tratta;
+    }
 
-    public LocalDate getDataInizio() { return dataInizio; }
-    public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
+    public void setTratta(Tratta tratta) {
+        this.tratta = tratta;
+    }
+
+    public LocalTime getPercorrenza() {
+        return percorrenza;
+    }
+
+    public void setPercorrenza(LocalTime percorrenza) {
+        this.percorrenza = percorrenza;
+    }
+
+    public LocalDate getDataInizio() {
+        return dataInizio;
+    }
+
+    public void setDataInizio(LocalDate dataInizio) {
+        this.dataInizio = dataInizio;
+    }
 
 }

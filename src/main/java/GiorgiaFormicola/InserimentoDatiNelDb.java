@@ -2,17 +2,12 @@ package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.*;
-import GiorgiaFormicola.enums.TipoAbbonamento;
 import GiorgiaFormicola.enums.TipoDiUtente;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.TesseraGiaEsistente;
-import GiorgiaFormicola.exceptions.UserAlreadyEnteredException;
 import GiorgiaFormicola.exceptions.UtenteAssociatoATessera;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -69,7 +64,7 @@ public class InserimentoDatiNelDb {
 //        tessereDAO.createNuovaTessera(2, utenteFromDB2);
 //        tessereDAO.createNuovaTessera(3, utenteFromDB3);
 //        tessereDAO.createNuovaTessera(4, utenteFromDB4);
-        } catch (UtenteAssociatoATessera e){
+        } catch (UtenteAssociatoATessera e) {
             System.out.println(e.getMessage());
         }
 
@@ -118,7 +113,6 @@ public class InserimentoDatiNelDb {
 //        }
 
 
-
 //        -------------------- TRATTA --------------------
         TrattaDAO trattaDAO = new TrattaDAO(entityManager);
         Tratta tratta = new Tratta("Milano", "Bologna", LocalTime.now());
@@ -129,7 +123,6 @@ public class InserimentoDatiNelDb {
 //        trattaDAO.save(tratta);
 //        trattaDAO.save(tratta2);
 //        trattaDAO.save(tratta3);
-
 
 
 //        -------------------- TRATTE-MEZZI --------------------
@@ -144,9 +137,9 @@ public class InserimentoDatiNelDb {
 //        MezzoDiTrasporto mezzoFromDB2 = mezziDiTrasportoDAO.findById("42cd0f7f-d76f-446f-b780-570d4947d052");
 //        MezzoDiTrasporto mezzoFromDB3 = mezziDiTrasportoDAO.findById("50e224a1-6757-40b2-968c-46af82323f1a");
 
-//        TrattaMezzo trattaMezzo = new TrattaMezzo(mezzoFromDB, trattaFromDB, LocalTime.now(), LocalDate.now());
-//        TrattaMezzo trattaMezzo2 = new TrattaMezzo(mezzoFromDB2, trattaFromDB2, LocalTime.now(), LocalDate.now());
-//        TrattaMezzo trattaMezzo3 = new TrattaMezzo(mezzoFromDB3, trattaFromDB3, LocalTime.now(), LocalDate.now());
+//        TrattaMezzo trattaMezzo = new TrattaMezzo(mezzoFromDB, trattaFromDB, LocalDate.now());
+//        TrattaMezzo trattaMezzo2 = new TrattaMezzo(mezzoFromDB2, trattaFromDB2, LocalDate.now());
+//        TrattaMezzo trattaMezzo3 = new TrattaMezzo(mezzoFromDB3, trattaFromDB3, LocalDate.now());
 
 //        trattaMezzoDAO.registraPercorrenza(trattaMezzo);
 //        trattaMezzoDAO.registraPercorrenza(trattaMezzo2);

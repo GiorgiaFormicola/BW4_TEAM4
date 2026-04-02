@@ -2,10 +2,13 @@ package GiorgiaFormicola.dao;
 
 import GiorgiaFormicola.entities.Tratta;
 import GiorgiaFormicola.exceptions.NotFoundException;
+import GiorgiaFormicola.exceptions.TrattaMaiEffettuataDalMezzoException;
+import GiorgiaFormicola.exceptions.TrattaMaiEffettuataException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 public class TrattaDAO {
@@ -26,7 +29,6 @@ public class TrattaDAO {
                         "' a '" + t.getCapolinea() + "' esiste già con ID: " + esistente.getId());
                 return;
             }
-
             tdt.begin();
             em.persist(t);
             tdt.commit();
@@ -38,20 +40,44 @@ public class TrattaDAO {
         }
     }
 
-    public long countPercorrenzeMezzoSuTratta(UUID mezzoId, UUID trattaId) {
+    public long countPercorrenzeMezzoSuTratta(String mezzoId, String trattaId) {
         return em.createQuery(
                         "SELECT COUNT(tm) FROM TrattaMezzo tm WHERE tm.mezzo.id = :mId AND tm.tratta.id = :tId", Long.class)
-                .setParameter("mId", mezzoId)
-                .setParameter("tId", trattaId)
+                .setParameter("mId", UUID.fromString(mezzoId))
+                .setParameter("tId", UUID.fromString(trattaId))
                 .getSingleResult();
     }
 
-    public Double getTempoMedioEffettivo(UUID trattaId) {
-        return em.createQuery(
+    public LocalTime getTempoMedioEffettivo(String trattaId) {
+        Double mediaMinuti = em.createQuery(
                         "SELECT AVG(HOUR(tm.percorrenza) * 60 + MINUTE(tm.percorrenza)) " +
                                 "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId", Double.class)
-                .setParameter("tId", trattaId)
+                .setParameter("tId", UUID.fromString(trattaId))
                 .getSingleResult();
+
+        if (mediaMinuti == 0) throw new TrattaMaiEffettuataException();
+        int ore = mediaMinuti.intValue() / 60;
+        int minuti = mediaMinuti.intValue() % 60;
+        int secondi = (int) ((mediaMinuti - mediaMinuti.intValue()) * 60);
+
+        return LocalTime.of(ore, minuti, secondi);
+    }
+
+    public LocalTime getTempoMedioEffettivoInBaseAMezzo(String trattaId, String mezzoId) {
+        Double mediaMinuti = em.createQuery(
+                        "SELECT AVG(HOUR(tm.percorrenza) * 60 + MINUTE(tm.percorrenza)) " +
+                                "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId AND tm.mezzo.id = :mezzoId", Double.class)
+                .setParameter("tId", UUID.fromString(trattaId))
+                .setParameter("mezzoId", UUID.fromString(mezzoId))
+                .getSingleResult();
+
+        if (mediaMinuti == 0) throw new TrattaMaiEffettuataDalMezzoException();
+
+        int ore = mediaMinuti.intValue() / 60;
+        int minuti = mediaMinuti.intValue() % 60;
+        int secondi = (int) ((mediaMinuti - mediaMinuti.intValue()) * 60);
+
+        return LocalTime.of(ore, minuti, secondi);
     }
 
     public Tratta findByPartenzaECapolinea(String partenza, String capolinea) {
@@ -66,11 +92,11 @@ public class TrattaDAO {
     }
 
     public Tratta getTrattaById(String trattaId) {
-        Tratta found = em.find(Tratta.class, trattaId);
+        Tratta found = em.find(Tratta.class, UUID.fromString(trattaId));
         if (found == null) {
             throw new NotFoundException(trattaId);
         } else {
-            System.out.println("La tratta con id " + trattaId + " è stata trovata");
+            /* System.out.println("La tratta con id " + trattaId + " è stata trovata");*/
             return found;
         }
     }

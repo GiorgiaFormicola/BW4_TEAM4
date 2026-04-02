@@ -24,6 +24,7 @@ public class TestPerScanner {
     private static final UtenteDAO utentiDAO = new UtenteDAO(entityManager);
     /*private static final TesseraDAO tessereDAO = new TesseraDAO(entityManager);*/  //TODO
     private static final TrattaDAO tratteDAO = new TrattaDAO(entityManager);
+    private static final TrattaMezzoDAO assegnazioniDAO = new TrattaMezzoDAO(entityManager);
 
     public static void main(String[] args) {
         // SCELTA TIPO DI UTENTE DA SIMULARE
@@ -920,10 +921,10 @@ public class TestPerScanner {
                 while (true) {
                     System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA SVOLGERE DIGITANDO IL RISPETTIVO NUMERO");
                     System.out.println("1.Aggiungi una nuova tratta");
-                    System.out.println("2.Assegna una tratta ad un mezzo");
-                    System.out.println("3.Aggiorna percorrenza tratta effettuata");
+                    System.out.println("2.Assegna tratta ad un mezzo in una specifica data");
+                    System.out.println("3.Aggiorna percorrenza di una tratta effettuata");
                     System.out.println("4.Ottieni il numero di volte che una tratta è stata percorsa da uno specifico mezzo");
-                    System.out.println("5.Ottieni la media del tempo di percorrenza di una tratta da parte di diversi mezzi");
+                    System.out.println("5.Ottieni la media del tempo di percorrenza di una tratta");
                     System.out.println("6.Ottieni il tempo medio effettivo di percorrenza di una tratta da parte di un mezzo specifico");
                     System.out.println("0.ESCI DALLA SIMULAZIONE");
                     try {
@@ -959,8 +960,109 @@ public class TestPerScanner {
 
                         //OPERAZIONE 2
                         if (operazione == 2) {
-                            TrattaMezzo tratta = new TrattaMezzo()
+                            System.out.println("\nInserire l'id della tratta da assegnare");
+                            String idTratta = scanner.nextLine();
+                            try {
+                                Tratta tratta = tratteDAO.getTrattaById(idTratta);
+                                System.out.println("\nInserire l'id del mezzo a cui assegnare la tratta");
+                                String idMezzo = scanner.nextLine();
+                                MezzoDiTrasporto mezzo = mezziDAO.findById(idMezzo);
+                                System.out.println("\nInserire la data in cui il mezzo dovrà svolgere la tratta");
+                                System.out.println("\nInserire il giorno");
+                                int giorno = Integer.parseInt(scanner.nextLine());
+                                System.out.println("\nInserire il mese");
+                                int mese = Integer.parseInt(scanner.nextLine());
+                                System.out.println("\nInserire l'anno");
+                                int anno = Integer.parseInt(scanner.nextLine());
+                                LocalDate dataPercorrenza = LocalDate.of(anno, mese, giorno);
+                                assegnazioniDAO.assegnaTrattaAMezzoInUnaSpecificaData(dataPercorrenza, tratta, mezzo);
+                            } catch (NotFoundException | IllegalArgumentException | DateTimeException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("ERRORE: formato ID non valido");
+                                if (e instanceof DateTimeException)
+                                    System.err.println("\nERRORE: Data non valida, riprovare!\n");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
                         }
+
+                        //OPERAZIONE 3
+                        if (operazione == 3) {
+                            System.out.println("\nInserire l'id della tratta effettuata di cui si vuole aggiornare la percorrenza");
+                            String idTrattaEffettuata = scanner.nextLine();
+                            try {
+                                TrattaMezzo trattaEffettuata = assegnazioniDAO.findById(idTrattaEffettuata);
+                                System.out.println("\nInserire la durata di percorrenza effettiva della tratta:");
+                                System.out.println("\nInserire il numero di ore");
+                                try {
+                                    int ore = Integer.parseInt(scanner.nextLine());
+                                    System.out.println("\nInserire il numero di minuti");
+                                    int minuti = Integer.parseInt(scanner.nextLine());
+                                    LocalTime percorrenzaEffettiva = LocalTime.of(ore, minuti);
+                                    assegnazioniDAO.aggiornaPercorrenzaEffettivaTrattaAssegnata(percorrenzaEffettiva, trattaEffettuata);
+                                } catch (NumberFormatException e) {
+                                    System.err.println("\nERRORE: Inserimento non valido, digitare un numero intero");
+                                }
+                            } catch (NotFoundException | IllegalArgumentException | DateTimeException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("ERRORE: formato ID non valido");
+                                if (e instanceof DateTimeException)
+                                    System.err.println("\nERRORE: Data non valida, riprovare!\n");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 4
+                        if (operazione == 4) {
+                            System.out.println("\nInserire l'id della tratta desiderata");
+                            String idTratta = scanner.nextLine();
+                            try {
+                                Tratta tratta = tratteDAO.getTrattaById(idTratta);
+                                System.out.println("\nInserire l'id del mezzo desiderato");
+                                String idMezzo = scanner.nextLine();
+                                mezziDAO.findById(idMezzo);
+                                long risultato = tratteDAO.countPercorrenzeMezzoSuTratta(idMezzo, idTratta);
+                                System.out.println("Il mezzo " + idMezzo + " ha effettuato la tratta " + tratta.getPartenza() + " - " + tratta.getCapolinea() + " " + risultato + " volte");
+                            } catch (NotFoundException | IllegalArgumentException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("ERRORE: formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 5
+                        if (operazione == 5) {
+                            System.out.println("\nInserire l'id della tratta desiderata");
+                            String idTratta = scanner.nextLine();
+                            try {
+                                Tratta tratta = tratteDAO.getTrattaById(idTratta);
+                                LocalTime media = tratteDAO.getTempoMedioEffettivo(idTratta);
+                                System.out.println("Il tempo medio impiegato per effettuare la tratta " + tratta.getPartenza() + " - " + tratta.getCapolinea() + " è di " + media.getHour() + " ore e " + media.getMinute() + " minuti");
+                            } catch (NotFoundException | IllegalArgumentException | TrattaMaiEffettuataException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("ERRORE: formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 6
+                        if (operazione == 6) {
+                            System.out.println("\nInserire l'id della tratta desiderata");
+                            String idTratta = scanner.nextLine();
+                            try {
+                                Tratta tratta = tratteDAO.getTrattaById(idTratta);
+                                System.out.println("\nInserire l'id del mezzo desiderato");
+                                String idMezzo = scanner.nextLine();
+                                mezziDAO.findById(idMezzo);
+                                LocalTime media = tratteDAO.getTempoMedioEffettivoInBaseAMezzo(idTratta, idMezzo);
+                                System.out.println("Il tempo medio impiegato dal mezzo " + idMezzo + " per effettuare la tratta " + tratta.getPartenza() + " - " + tratta.getCapolinea() + " è di " + media.getHour() + " ore e " + media.getMinute() + " minuti");
+                            } catch (NotFoundException | IllegalArgumentException |
+                                     TrattaMaiEffettuataDalMezzoException e) {
+                                if (e instanceof IllegalArgumentException)
+                                    System.err.println("ERRORE: formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
                     } catch (NumberFormatException e) {
                         System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     }
