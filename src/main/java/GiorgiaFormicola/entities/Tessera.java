@@ -52,9 +52,6 @@ public class Tessera {
         return utente;
     }
 
-    public void setUtente(Utente utente) {
-        this.utente = utente;
-    }
 
  /* public String getCodiceFiscale() {
         return codiceFiscale;
@@ -66,6 +63,24 @@ public class Tessera {
 
     public LocalDate getDataScadenza() {
         return dataScadenza;
+    }
+
+
+
+    public void setNumeroTessera(Long numeroTessera) {
+        this.numeroTessera = numeroTessera;
+    }
+
+    public void setDataEmissione(LocalDate dataEmissione) {
+        this.dataEmissione = dataEmissione;
+    }
+
+    public void setDataScadenza(LocalDate dataScadenza) {
+        this.dataScadenza = dataScadenza;
+    }
+
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
 
     @Override

@@ -15,33 +15,17 @@ public abstract class PuntiEmissione {
     @Column(name = "punti_emissione_id")
     private UUID id;
 
-    @Column(name = "attivo")
-    private boolean attivo;
-
     protected PuntiEmissione() {
-    }
-
-    public PuntiEmissione(boolean attivo) {
-        this.attivo = attivo;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public boolean isAttivo() {
-        return attivo;
-    }
-
-    public void setAttivo(boolean attivo) {
-        this.attivo = attivo;
-    }
-
     @Override
     public String toString() {
         return "PuntiEmissione{" +
                 "id=" + id +
-                ", attivo=" + attivo +
                 '}';
     }
 }
