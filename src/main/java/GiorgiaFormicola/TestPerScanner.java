@@ -4,16 +4,16 @@ import GiorgiaFormicola.dao.EmissioniDAO;
 import GiorgiaFormicola.dao.MezziDiTrasportoDAO;
 import GiorgiaFormicola.dao.PuntiEmissioneDAO;
 import GiorgiaFormicola.dao.UtenteDAO;
-import GiorgiaFormicola.entities.Biglietto;
-import GiorgiaFormicola.entities.MezzoDiTrasporto;
-import GiorgiaFormicola.entities.PuntiEmissione;
-import GiorgiaFormicola.entities.Utente;
+import GiorgiaFormicola.entities.*;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 public class TestPerScanner {
@@ -27,61 +27,78 @@ public class TestPerScanner {
     /*private static final TesseraDAO tessereDAO = new TesseraDAO(entityManager);*/  //TODO
 
     public static void main(String[] args) {
-        //SCEGLIERE TIPO DI SIMULAZIONE
-        int simulazione;
+        // SCELTA TIPO DI UTENTE DA SIMULARE
+        int tipoUtente;
 
         while (true) {
-            System.out.println("SCEGLIERE IL TIPO DI SIMULAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
-            System.out.println("1.PUNTO DI EMISSIONE");
-            System.out.println("2.MEZZO DI TRASPORTO");
-            System.out.println("3.PORTALE");
+            System.out.println("SCEGLIERE IL TIPO DI UTENTE DA SIMULARE DIGITANDO IL RISPETTIVO NUMERO");
+            System.out.println("1.PERSONA NON REGISTRATA");
+            System.out.println("2.UTENTE REGISTRATO");
+            System.out.println("3.AMMINISTRATORE");
             try {
-                simulazione = Integer.parseInt(scanner.nextLine());
-                if (simulazione < 1 || simulazione > 3)
-                    System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                tipoUtente = Integer.parseInt(scanner.nextLine());
+                if (tipoUtente < 1 || tipoUtente > 3)
+                    System.err.println("\nERRORE: Tipo di utente selezionato non valido, riprovare! \n");
                 else break;
             } catch (NumberFormatException e) {
-                System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                System.err.println("\nERRORE: Tipo di utente selezionato non valido, riprovare! \n");
             }
         }
+
+        System.out.print("\nTIPO DI UTENTE SCELTO: " + switch (tipoUtente) {
+            case 1 -> "PERSONA NON REGISTRATA";
+            case 2 -> "UTENTE";
+            case 3 -> "AMMINISTRATORE";
+            default -> "TIPO DI UTENTE NON VALIDO";
+        });
+        System.out.println("\n");
+
+
+        //SCELTA TIPO DI SIMULAZIONE
+        int simulazione;
+
+        if (tipoUtente == 1 || tipoUtente == 2) {
+            while (true) {
+                System.out.println("SCEGLIERE IL TIPO DI SIMULAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("1.PUNTO DI EMISSIONE");
+                System.out.println("2.MEZZO DI TRASPORTO");
+                System.out.println("3.PORTALE");
+                try {
+                    simulazione = Integer.parseInt(scanner.nextLine());
+                    if (simulazione < 1 || simulazione > 3)
+                        System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                    else break;
+                } catch (NumberFormatException e) {
+                    System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                }
+            }
+        } else {
+            while (true) {
+                System.out.println("SCEGLIERE IL TIPO DI SIMULAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("1.PORTALE");
+                try {
+                    simulazione = Integer.parseInt(scanner.nextLine()) + 3;
+                    if (simulazione != 4)
+                        System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                    else break;
+                } catch (NumberFormatException e) {
+                    System.err.println("\nERRORE: Simulazione selezionata non valida, riprovare! \n");
+                }
+            }
+        }
+
 
         System.out.print("\nSIMULAZIONE SCELTA: " + switch (simulazione) {
             case 1 -> "PUNTO DI EMISSIONE";
             case 2 -> "MEZZO DI TRASPORTO";
-            case 3 -> "PORTALE";
+            case 3, 4 -> "PORTALE";
             default -> "SIMULAZIONE NON VALIDA";
         });
         System.out.println();
 
 
-        // SCEGLIERE TIPO DI INTERAZIONE
-        int interazione;
-
-        while (true) {
-            System.out.println("SCEGLIERE IL TIPO DI INTERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
-            System.out.println("1.CON PERSONA NON REGISTRATA");
-            System.out.println("2.CON UTENTE");
-            System.out.println("3.CON AMMINISTRATORE");
-            try {
-                interazione = Integer.parseInt(scanner.nextLine());
-                if (interazione < 1 || interazione > 3)
-                    System.err.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
-                else break;
-            } catch (NumberFormatException e) {
-                System.err.println("\nERRORE: Interazione selezionata non valida, riprovare! \n");
-            }
-        }
-
-        System.out.print("\nINTERAZIONE SCELTA: " + switch (interazione) {
-            case 1 -> "CON PERSONA NON REGISTRATA";
-            case 2 -> "CON UTENTE";
-            case 3 -> "CON AMMINISTRATORE";
-            default -> "INTERAZIONE NON VALIDA";
-        });
-        System.out.println("\n");
-
         //GESTIONE PUNTO DI EMISSIONE + PERSONA NON REGISTRATA
-        if (interazione == 1 && simulazione == 1) {
+        if (tipoUtente == 1 && simulazione == 1) {
             while (true) {
                 int operazione;
                 System.out.println("SCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
@@ -115,7 +132,7 @@ public class TestPerScanner {
         //GESTIONE MEZZO DI TRAPORTO + PERSONA NON REGISTRATA
         //TODO: check eccezione capienza massima raggiunta
         //TODO: aggiustare doppia vidimazione valida nella stessa simulazione
-        if (interazione == 1 && simulazione == 2) {
+        if (tipoUtente == 1 && simulazione == 2) {
             while (true) {
                 int operazione;
                 System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
@@ -158,7 +175,7 @@ public class TestPerScanner {
         //GESTIONE PORTALE + PERSONA NON REGISTRATA
         //TODO: controllo su formato codice fiscale
         //TODO: messaggio all'utente se codice fiscale già associato ad una persona nel DB
-        if (interazione == 1 && simulazione == 3) {
+        if (tipoUtente == 1 && simulazione == 3) {
             while (true) {
                 int operazione;
                 System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
@@ -188,7 +205,7 @@ public class TestPerScanner {
         //GESTIONE PUNTO DI EMISSIONE E UTENTE
         //TODO: test
         //TODO: getTesseraByNumeroTessera
-        /*if (interazione == 2 && simulazione == 1) {
+        /*if (tipoUtente == 2 && simulazione == 1) {
             while (true) {
                 int operazione;
                 System.out.println("SCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
@@ -246,7 +263,7 @@ public class TestPerScanner {
         //GESTIONE MEZZO DI TRASPORTO E UTENTE
         //TODO: test
         //TODO: getTesseraByNumeroTessera
-        /*if (interazione == 2 && simulazione == 2) {
+        /*if (tipoUtente == 2 && simulazione == 2) {
             while (true) {
                 int operazione;
                 System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
@@ -286,8 +303,8 @@ public class TestPerScanner {
             }
         }*/
 
-        //GESTIONE PORTALE E UTENTE
-        if (interazione == 2 && simulazione == 3) {
+        //GESTIONE PORTALE E UTENTE //TODO
+        /*if (tipoUtente == 2 && simulazione == 3) {
             while (true) {
                 System.out.println("\nPer accedere al portale inserire il proprio codice fiscale");
                 String codiceFiscale = scanner.nextLine();
@@ -315,7 +332,7 @@ public class TestPerScanner {
                             //CONTROLLA VALIDITA' TESSERA (PASSA TESSERA, STAMPA SE SCADUTA O MENO)
                         } else {
                             //TROVA TESSERA IN BASE A UTENTE
-                            /*emissioniDAO.controllaValiditàAbbonamento(tessera);*/
+                            *//*emissioniDAO.controllaValiditàAbbonamento(tessera);*//*
                         }
                     }
                 } catch (UtenteNonTrovatoException | NumberFormatException e) {
@@ -324,6 +341,451 @@ public class TestPerScanner {
                     else System.err.println("ERRORE: " + e.getMessage());
                 }
             }
+        }*/
+
+        //GESTIONE AMMINISTRATORE + PORTALE
+        if (tipoUtente == 3) {
+            Utente utente;
+            while (true) {
+                System.out.println("\nPer accedere al portale come amministratore inserire il proprio codice fiscale");
+                String codiceFiscale = scanner.nextLine();
+                try {
+                    utente = utentiDAO.findByCodiceFiscale(codiceFiscale);
+                    if (utente.getTipo() != TipoDiUtente.AMMINISTRATORE)
+                        throw new MancanzaPermessoAmministratoreException();
+                    else break;
+                } catch (UtenteNonTrovatoException |
+                         MancanzaPermessoAmministratoreException e) {
+                    System.err.println("ERRORE: " + e.getMessage());
+                }
+            }
+
+            int areaPortale;
+            while (true) {
+                System.out.println("\nSCEGLIERE A CHE AREA DEL PORTALE SI VUOLE ACCEDERE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("1.GESTIONE PUNTI EMISSIONE");
+                System.out.println("2.GESTIONE EMISSIONI");
+                System.out.println("3.GESTIONE PARCO MEZZI");
+                System.out.println("4.GESTIONE TRATTE");
+                System.out.println("0.ESCI DALLA SIMULAZIONE");
+                try {
+                    areaPortale = Integer.parseInt(scanner.nextLine());
+                    if (areaPortale == 0) break;
+                    if (areaPortale < 1 || areaPortale > 4)
+                        System.err.println("\nERRORE: Area portale selezionata non valida, riprovare!\n");
+                    else break;
+                } catch (NumberFormatException e) {
+                    System.err.println("\nERRORE: Area portale selezionata non valida, riprovare!\n");
+                }
+            }
+
+            //GESTIONE PUNTI EMISSIONE
+            if (areaPortale == 1) {
+                int operazione;
+                while (true) {
+                    System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA SVOLGERE DIGITANDO IL RISPETTIVO NUMERO");
+                    System.out.println("1.Aggiungi un punto di emissione");
+                    System.out.println("2.Controlla lo stato di un distributore automatico");
+                    System.out.println("3.Imposta un distributore automatico a 'fuori servizio'");
+                    System.out.println("4.Imposta un distributore automatico a 'in servizio'");
+                    System.out.println("5.Visiona tutti i punti di emissione in servizio");
+                    System.out.println("6.Visiona i distributori in servizio");
+                    System.out.println("7.Visiona i distributori fuori servizio");
+                    System.out.println("0.ESCI DALLA SIMULAZIONE");
+                    try {
+                        operazione = Integer.parseInt(scanner.nextLine());
+                        if (operazione == 0) break;
+                        if (operazione < 1 || operazione > 7)
+                            System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+
+                        //OPERAZIONE 1
+                        if (operazione == 1) {
+                            while (true) {
+                                System.out.println("\nChe punto di emissione vuoi aggiungere?");
+                                System.out.println("1.Distributore automatico");
+                                System.out.println("2.Rivenditore autorizzato");
+                                System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                int tipoPuntoEmissione;
+                                try {
+                                    tipoPuntoEmissione = Integer.parseInt(scanner.nextLine());
+                                    if (tipoPuntoEmissione == 0) break;
+                                    if (tipoPuntoEmissione < 1 || tipoPuntoEmissione > 2)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    else {
+                                        if (tipoPuntoEmissione == 1) {
+                                            puntiDAO.savePuntoEmissione(new DistributoriAutomatici(true));
+                                        } else {
+                                            puntiDAO.savePuntoEmissione(new RivenditoriAutorizzati());
+                                        }
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                }
+                            }
+                        }
+
+                        //OPERAZIONE 2
+                        if (operazione == 2) {
+                            System.out.println("\nInserire l'id del distributore automatico interessato");
+                            String idDistributore = scanner.nextLine();
+                            try {
+                                DistributoriAutomatici distributore = puntiDAO.getDistributoreById(idDistributore);
+                                if (distributore.isAttivo())
+                                    System.out.println("\nIl distributore selezionato è in servizio");
+                                else System.out.println("\nIl distributore selezionato è fuori servizio");
+                            } catch (IllegalArgumentException | NotFoundException e) {
+                                if (e instanceof IllegalArgumentException) System.err.println("Formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 3
+                        if (operazione == 3) {
+                            System.out.println("\nInserire l'id del distributore automatico interessato");
+                            String idDistributore = scanner.nextLine();
+                            try {
+                                puntiDAO.changeStatoDistributore(idDistributore, false);
+                            } catch (IllegalArgumentException | CambioStatoPuntoEmissioneException e) {
+                                if (e instanceof IllegalArgumentException) System.err.println("Formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 4
+                        if (operazione == 4) {
+                            System.out.println("\nInserire l'id del distributore automatico interessato");
+                            String idDistributore = scanner.nextLine();
+                            try {
+                                puntiDAO.changeStatoDistributore(idDistributore, true);
+                            } catch (IllegalArgumentException | CambioStatoPuntoEmissioneException e) {
+                                if (e instanceof IllegalArgumentException) System.err.println("Formato ID non valido");
+                                else System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 5
+                        if (operazione == 5) {
+                            try {
+                                List<PuntiEmissione> puntiAttivi = puntiDAO.findPuntiEmissioneAttivi();
+                                System.out.println("\nPUNTI DI EMISSIONE IN SERVIZIO:");
+                                puntiAttivi.forEach(punto -> System.out.println((punto.getClass().getSimpleName().equals("DistributoriAutomatici") ? "Distributore automatico" : "Rivenditore autorizzato") + "  " + punto.getId()));
+                            } catch (NessunElementoTrovatoException e) {
+                                System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 6
+                        if (operazione == 6) {
+                            try {
+                                List<PuntiEmissione> puntiAttivi = puntiDAO.findDistributoriAttivi();
+                                System.out.println("\nDISTRIBUTORI IN SERVIZIO:");
+                                puntiAttivi.forEach(punto -> System.out.println("Distributore automatico" + "  " + punto.getId()));
+                            } catch (NessunElementoTrovatoException e) {
+                                System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+                        //OPERAZIONE 7
+                        if (operazione == 7) {
+                            try {
+                                List<PuntiEmissione> puntiAttivi = puntiDAO.findDistributoriNonAttivi();
+                                System.out.println("\nDISTRIBUTORI NON IN SERVIZIO:");
+                                puntiAttivi.forEach(punto -> System.out.println("Distributore automatico" + "  " + punto.getId()));
+                            } catch (NessunElementoTrovatoException e) {
+                                System.err.println("ERRORE: " + e.getMessage());
+                            }
+                        }
+
+
+                    } catch (NumberFormatException e) {
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    }
+                }
+            }
+
+            //GESTIONE EMISSIONI
+            if (areaPortale == 2) {
+                int operazione;
+                while (true) {
+                    System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA SVOLGERE DIGITANDO IL RISPETTIVO NUMERO");
+                    System.out.println("1.Ottieni il totale di emissioni divise per punto di emissione");
+                    System.out.println("2.Ottieni il totale di emissioni avvenute in uno specifico arco di tempo");
+                    System.out.println("3.Ottieni il totale di emissioni emesse da uno specifico punto di emissione");
+                    System.out.println("4.Ottieni il totale di biglietti vidimati su uno specifico mezzo");
+                    System.out.println("5.Ottieni il totale di biglietti vidimati in uno specifico arco di tempo");
+                    System.out.println("0.ESCI DALLA SIMULAZIONE");
+                    try {
+                        operazione = Integer.parseInt(scanner.nextLine());
+                        if (operazione == 0) break;
+                        if (operazione < 1 || operazione > 5)
+                            System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+
+                        //OPERAZIONE 1
+                        if (operazione == 1) {
+                            while (true) {
+                                System.out.println("\nChe tipo di emissione vuoi verificare?");
+                                System.out.println("1.Tutte");
+                                System.out.println("2.Solo biglietti");
+                                System.out.println("3.Solo abbonamenti");
+                                System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                int tipoEmissione;
+                                try {
+                                    tipoEmissione = Integer.parseInt(scanner.nextLine());
+                                    if (tipoEmissione == 0) break;
+                                    if (tipoEmissione < 1 || tipoEmissione > 3)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    else {
+                                        if (tipoEmissione == 1) {
+                                            emissioniDAO.getTotaleEmissioniPerPuntoDiEmissione().forEach(System.out::println);
+                                        } else if (tipoEmissione == 2) {
+                                            emissioniDAO.getTotaleBigliettiPerPuntoDiEmissione().forEach(System.out::println);
+                                        } else {
+                                            emissioniDAO.getTotaleAbbonamentiPerPuntoDiEmissione().forEach(System.out::println);
+                                        }
+                                    }
+                                } catch (NumberFormatException | NessunElementoTrovatoException e) {
+                                    if (e instanceof NumberFormatException)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    else System.err.println("ERRORE: " + e.getMessage());
+                                }
+
+                            }
+                        }
+
+                        //OPERAZIONE 2
+                        if (operazione == 2) {
+                            while (true) {
+                                System.out.println("\nChe tipo di emissione vuoi verificare?");
+                                System.out.println("1.Tutte");
+                                System.out.println("2.Solo biglietti");
+                                System.out.println("3.Solo abbonamenti");
+                                System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                int tipoEmissione;
+                                try {
+                                    tipoEmissione = Integer.parseInt(scanner.nextLine());
+                                    if (tipoEmissione == 0) break;
+                                    if (tipoEmissione < 1 || tipoEmissione > 3)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    else {
+                                        System.out.println("\nChe periodo vuoi verificare?");
+                                        System.out.println("1.In una specifica data");
+                                        System.out.println("2.Prima di una specifica data");
+                                        System.out.println("3.Dopo una specifica data");
+                                        System.out.println("4.Tra due specifiche date");
+                                        System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                        int periodo;
+                                        periodo = Integer.parseInt(scanner.nextLine());
+                                        if (periodo == 0) break;
+                                        if (periodo < 1 || periodo > 4)
+                                            System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                        else {
+                                            if (tipoEmissione == 1) {
+                                                if (periodo == 4)
+                                                    System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
+                                                System.out.println("\n Inserire l'anno desiderato:");
+                                                int anno = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il mese desiderato:");
+                                                int mese = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il giorno desiderato:");
+                                                int giorno = Integer.parseInt(scanner.nextLine());
+                                                LocalDate dataInizio = LocalDate.of(anno, mese, giorno);
+                                                if (periodo == 1) {
+                                                    System.out.println("EMISSIONI IN DATA " + dataInizio + " : " + emissioniDAO.getTotaleEmissioniInBaseAData(dataInizio, ""));
+                                                } else if (periodo == 2) {
+                                                    System.out.println("EMISSIONI PRIMA DEL " + dataInizio + " : " + emissioniDAO.getTotaleEmissioniInBaseAData(dataInizio, "prima"));
+                                                } else if (periodo == 3) {
+                                                    System.out.println("EMISSIONI DOPO IL " + dataInizio + " : " + emissioniDAO.getTotaleEmissioniInBaseAData(dataInizio, "dopo"));
+                                                } else {
+                                                    System.out.println("\nINSERIRE LA DATA DI FINE DEL PERIODO DESIDERATO");
+                                                    System.out.println("\n Inserire l'anno desiderato:");
+                                                    int anno2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il mese desiderato:");
+                                                    int mese2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il giorno desiderato:");
+                                                    int giorno2 = Integer.parseInt(scanner.nextLine());
+                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    System.out.println("EMISSIONI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleEmissioniInArcoTemporale(dataInizio, dataFine));
+                                                }
+                                            } else if (tipoEmissione == 2) {
+                                                if (periodo == 4)
+                                                    System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
+                                                System.out.println("\n Inserire l'anno desiderato:");
+                                                int anno = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il mese desiderato:");
+                                                int mese = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il giorno desiderato:");
+                                                int giorno = Integer.parseInt(scanner.nextLine());
+                                                LocalDate dataInizio = LocalDate.of(anno, mese, giorno);
+                                                if (periodo == 1) {
+                                                    System.out.println("BIGLIETTI EMESSI IN DATA " + dataInizio + " : " + emissioniDAO.getTotaleBigliettiInBaseAData(dataInizio, ""));
+                                                } else if (periodo == 2) {
+                                                    System.out.println("BIGLIETTI EMESSI PRIMA DEL " + dataInizio + " : " + emissioniDAO.getTotaleBigliettiInBaseAData(dataInizio, "prima"));
+                                                } else if (periodo == 3) {
+                                                    System.out.println("BIGLIETTI EMESSI DOPO IL " + dataInizio + " : " + emissioniDAO.getTotaleBigliettiInBaseAData(dataInizio, "dopo"));
+                                                } else {
+                                                    System.out.println("\nINSERIRE LA DATA DI FINE DEL PERIODO DESIDERATO");
+                                                    System.out.println("\n Inserire l'anno desiderato:");
+                                                    int anno2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il mese desiderato:");
+                                                    int mese2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il giorno desiderato:");
+                                                    int giorno2 = Integer.parseInt(scanner.nextLine());
+                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    System.out.println("BIGLIETTI EMESSI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleBigliettiInArcoTemporale(dataInizio, dataFine));
+                                                }
+                                            } else {
+                                                if (periodo == 4)
+                                                    System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
+                                                System.out.println("\n Inserire l'anno desiderato:");
+                                                int anno = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il mese desiderato:");
+                                                int mese = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il giorno desiderato:");
+                                                int giorno = Integer.parseInt(scanner.nextLine());
+                                                LocalDate dataInizio = LocalDate.of(anno, mese, giorno);
+                                                if (periodo == 1) {
+                                                    System.out.println("ABBONAMENTI EMESSI IN DATA " + dataInizio + " : " + emissioniDAO.getTotaleAbbonamentiInBaseAData(dataInizio, ""));
+                                                } else if (periodo == 2) {
+                                                    System.out.println("ABBONAMENTI EMESSI PRIMA DEL " + dataInizio + " : " + emissioniDAO.getTotaleAbbonamentiInBaseAData(dataInizio, "prima"));
+                                                } else if (periodo == 3) {
+                                                    System.out.println("ABBONAMENTI EMESSI DOPO IL " + dataInizio + " : " + emissioniDAO.getTotaleAbbonamentiInBaseAData(dataInizio, "dopo"));
+                                                } else {
+                                                    System.out.println("\nINSERIRE LA DATA DI FINE DEL PERIODO DESIDERATO");
+                                                    System.out.println("\n Inserire l'anno desiderato:");
+                                                    int anno2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il mese desiderato:");
+                                                    int mese2 = Integer.parseInt(scanner.nextLine());
+                                                    System.out.println("\n Inserire il giorno desiderato:");
+                                                    int giorno2 = Integer.parseInt(scanner.nextLine());
+                                                    LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                    System.out.println("ABBONAMENTI EMESSI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleAbbonamentiInArcoTemporale(dataInizio, dataFine));
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (NumberFormatException | NessunElementoTrovatoException | DateTimeException e) {
+                                    if (e instanceof NumberFormatException)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    if (e instanceof DateTimeException) {
+                                        System.err.println("\nERRORE: Data non valida, riprovare!\n");
+                                    } else System.err.println("ERRORE: " + e.getMessage());
+                                }
+                            }
+                        }
+
+                        //OPERAZIONE 3
+                        if (operazione == 3) {
+                            while (true) {
+                                System.out.println("\n Inserire l'id del punto di emissione da verificare");
+                                try {
+                                    String idPunto = scanner.nextLine();
+                                    PuntiEmissione punto = puntiDAO.getPuntoEmissioneById(idPunto);
+                                    System.out.println("\nChe tipo di emissione vuoi verificare?");
+                                    System.out.println("1.Tutte");
+                                    System.out.println("2.Solo biglietti");
+                                    System.out.println("3.Solo abbonamenti");
+                                    System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                    int tipoEmissione = Integer.parseInt(scanner.nextLine());
+                                    if (tipoEmissione == 0) break;
+                                    if (tipoEmissione < 1 || tipoEmissione > 3)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    else {
+                                        if (tipoEmissione == 1) {
+                                            System.out.println("TOTALE DELLE EMISSIONI AVVENUTE DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
+                                        } else if (tipoEmissione == 2) {
+                                            System.out.println("TOTALE DEI BIGLIETTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
+                                        } else {
+                                            System.out.println("TOTALE DEGLI ABBONAMENTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
+                                        }
+                                    }
+                                } catch (NessunElementoTrovatoException | NotFoundException |
+                                         IllegalArgumentException e) {
+                                    if (e instanceof NumberFormatException)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    if (e instanceof IllegalArgumentException)
+                                        System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                                    else System.err.println("ERRORE: " + e.getMessage());
+                                }
+                            }
+                        }
+
+
+                        //OPERAZIONE 4
+                        if (operazione == 4) {
+                            while (true) {
+                                System.out.println("\n Inserire l'id del mezzo da verificare");
+                                try {
+                                    String idMezzo = scanner.nextLine();
+                                    MezzoDiTrasporto mezzo = mezziDAO.findById(idMezzo);
+                                    System.out.println("\nChe periodo vuoi verificare?");
+                                    System.out.println("1.In una specifica data");
+                                    System.out.println("2.Prima di una specifica data");
+                                    System.out.println("3.Dopo una specifica data");
+                                    System.out.println("4.Tra due specifiche date");
+                                    System.out.println("5.Fino ad oggi");
+                                    System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
+                                    int periodo = Integer.parseInt(scanner.nextLine());
+                                    if (periodo == 0) break;
+                                    if (periodo < 1 || periodo > 5)
+                                        System.err.println("\nERRORE: Periodo selezionato non valido, riprovare!\n");
+                                    else {
+                                        if (periodo == 5) {
+                                            System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " FINO AD OGGI : " + emissioniDAO.getBigliettiVidimatiSuUnMezzo(idMezzo));
+                                        } else {
+                                            if (periodo == 4)
+                                                System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
+                                            System.out.println("\n Inserire l'anno desiderato:");
+                                            int anno = Integer.parseInt(scanner.nextLine());
+                                            System.out.println("\n Inserire il mese desiderato:");
+                                            int mese = Integer.parseInt(scanner.nextLine());
+                                            System.out.println("\n Inserire il giorno desiderato:");
+                                            int giorno = Integer.parseInt(scanner.nextLine());
+                                            LocalDate dataInizio = LocalDate.of(anno, mese, giorno);
+                                            if (periodo == 1) {
+                                                System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " IN DATA " + dataInizio + " : " + emissioniDAO.getBigliettiVidimatiInUnaDataSuUnMezzo(dataInizio, idMezzo));
+                                            } else if (periodo == 2) {
+                                                System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " PRIMA DEL " + dataInizio + " : " + emissioniDAO.getBigliettiVidimatiPrimaDiUnaDataSuUnMezzo(dataInizio, idMezzo));
+                                            } else if (periodo == 3) {
+                                                System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " DOPO IL " + dataInizio + " : " + emissioniDAO.getBigliettiVidimatiDopoUnaDataSuUnMezzo(dataInizio, idMezzo));
+                                            } else {
+                                                System.out.println("\nINSERIRE LA DATA DI FINE DEL PERIODO DESIDERATO");
+                                                System.out.println("\n Inserire l'anno desiderato:");
+                                                int anno2 = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il mese desiderato:");
+                                                int mese2 = Integer.parseInt(scanner.nextLine());
+                                                System.out.println("\n Inserire il giorno desiderato:");
+                                                int giorno2 = Integer.parseInt(scanner.nextLine());
+                                                LocalDate dataFine = LocalDate.of(anno, mese, giorno);
+                                                System.out.println("BIGLIETTI VALIDATI SUL MEZZO " + idMezzo + " TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getBigliettiVidimatiInUnArcoTemporaleSuUnMezzo(dataInizio, dataFine, idMezzo));
+                                            }
+                                        }
+                                    }
+                                } catch (NessunElementoTrovatoException | NotFoundException |
+                                         IllegalArgumentException | DateTimeException e) {
+                                    if (e instanceof NumberFormatException)
+                                        System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
+                                    if (e instanceof IllegalArgumentException)
+                                        System.err.println("\nERRORE: Formato ID non valido, riprovare!\n");
+                                    if (e instanceof DateTimeException)
+                                        System.err.println("\nERRORE: Data non valida, riprovare!\n");
+                                    else System.err.println("ERRORE: " + e.getMessage());
+                                }
+                            }
+                        }
+
+
+                        //OPERAZIONE 5
+
+
+                    } catch (NumberFormatException e) {
+                        System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
+                    }
+                }
+
+
+            }
+
+
         }
     }
 }

@@ -3,16 +3,11 @@ package GiorgiaFormicola;
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.RivenditoriAutorizzati;
-import GiorgiaFormicola.entities.Tessera;
 import GiorgiaFormicola.entities.Utente;
 import GiorgiaFormicola.enums.TipoDiUtente;
-import GiorgiaFormicola.exceptions.NotFoundException;
-import GiorgiaFormicola.exceptions.NotFoundUserException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import java.util.UUID;
 
 public class Application {
     private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("public_transport_company_pu");
@@ -141,10 +136,9 @@ public class Application {
         emissioniDAO.utilizzaEmissione(bigliettoFromDB, mezzoFromDB);*/
 
 
-
         //TEST DAO PER TESSERA
-        Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abc123");
-        Tessera tessera = new Tessera(3L);
+      /*  Utente utente = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "abc123");
+        Tessera tessera = new Tessera(3L);*/
         TessereDAO tessereDAO = new TessereDAO(entityManager);
         UtenteDAO utenteDAO = new UtenteDAO(entityManager);
 //        utenteDAO.save(utente);
@@ -158,7 +152,7 @@ public class Application {
 //        tessereDAO.deleteTesseraById(UUID.fromString("cff31457-dbaf-4e65-b4a0-9f22d7b6a49f"));
 //        tessereDAO.rinnovaTessera(1);
 
-        tessereDAO.checkScadenzaTessera(1);
+        /*  tessereDAO.checkScadenzaTessera(1);*/
 
         System.out.println("Hello World!");
 
@@ -168,7 +162,11 @@ public class Application {
 
         mezziDAO.addMezzo("autobus");
         mezziDAO.addMezzo("tram");*/
-        mezziDAO.updateOperativitàAttualeMezzo("765997dd-9881-432d-9b93-f336e9e8b164", "manutenzione", "prova update");
+//        mezziDAO.updateOperativitàAttualeMezzo("765997dd-9881-432d-9b93-f336e9e8b164", "manutenzione", "prova update");
+
+        Utente amministratore = new Utente(TipoDiUtente.AMMINISTRATORE, "provaadmin");
+        utenteDAO.save(amministratore);
+
     }
 }
 

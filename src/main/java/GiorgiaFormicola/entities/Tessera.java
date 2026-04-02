@@ -29,18 +29,27 @@ public class Tessera {
     protected Tessera() {
     }
 
-    public Tessera(Long numeroTessera) {
+    public Tessera(Long numeroTessera, Utente utente) {
         this.numeroTessera = numeroTessera;
         this.dataEmissione = LocalDate.now();
         this.dataScadenza = LocalDate.now().plusYears(1);
+        this.utente = utente;
     }
 
     public Long getNumeroTessera() {
         return numeroTessera;
     }
 
+    public void setNumeroTessera(Long numeroTessera) {
+        this.numeroTessera = numeroTessera;
+    }
+
     public LocalDate getDataEmissione() {
         return dataEmissione;
+    }
+
+    public void setDataEmissione(LocalDate dataEmissione) {
+        this.dataEmissione = dataEmissione;
     }
 
     public UUID getId() {
@@ -51,26 +60,16 @@ public class Tessera {
         return utente;
     }
 
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
+
     public LocalDate getDataScadenza() {
         return dataScadenza;
     }
 
-
-
-    public void setNumeroTessera(Long numeroTessera) {
-        this.numeroTessera = numeroTessera;
-    }
-
-    public void setDataEmissione(LocalDate dataEmissione) {
-        this.dataEmissione = dataEmissione;
-    }
-
     public void setDataScadenza(LocalDate dataScadenza) {
         this.dataScadenza = dataScadenza;
-    }
-
-    public void setUtente(Utente utente) {
-        this.utente = utente;
     }
 
     @Override

@@ -1,7 +1,10 @@
 package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.*;
-import GiorgiaFormicola.entities.*;
+import GiorgiaFormicola.entities.DistributoriAutomatici;
+import GiorgiaFormicola.entities.PuntiEmissione;
+import GiorgiaFormicola.entities.Tratta;
+import GiorgiaFormicola.entities.Utente;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -29,7 +32,7 @@ public class InserimentoDatiNelDb {
 
 //        -------------------- TESSERA --------------------
         TessereDAO tessereDAO = new TessereDAO(entityManager);
-        Tessera tessera = new Tessera(3l);
+        /*Tessera tessera = new Tessera(3l);*/
 //        try {
 //            tessereDAO.deleteTesseraById(UUID.fromString("0f929dd1-9666-484f-b52e-c01d78f329f6"));
 //        }catch (NotFoundException e){

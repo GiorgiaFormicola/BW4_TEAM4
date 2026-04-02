@@ -5,10 +5,10 @@ import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("rivenditori_autorizzati")
-public class RivenditoriAutorizzati extends PuntiEmissione{
+public class RivenditoriAutorizzati extends PuntiEmissione {
 
-    public RivenditoriAutorizzati(){
-
+    public RivenditoriAutorizzati() {
+        super();
     }
 
     @Override
