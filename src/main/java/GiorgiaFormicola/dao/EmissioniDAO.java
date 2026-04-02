@@ -42,7 +42,7 @@ public class EmissioniDAO {
         System.out.println(found.getClass().getSimpleName() + " " + idEmissione + " correttamente eliminata dallo storico.");
     }
 
-    public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
+   /* public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
         if (!puntoEmissione.isAttivo())
             throw new PuntoDiEmissioneNonAttivoException();
         else {
@@ -50,15 +50,52 @@ public class EmissioniDAO {
             this.save(nuovaBiglietto);
             System.out.println("\nBiglietto acquistato con successo!\n");
         }
+    }*/
+
+    public void acquistaBiglietto(PuntiEmissione puntoEmissione) {
+
+        Emissione nuovoBiglietto;
+        if (puntoEmissione instanceof DistributoriAutomatici) {
+            DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
+            if (!distributore.isAttivo())
+                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+            else {
+                nuovoBiglietto = new Biglietto(distributore);
+            }
+        } else {
+            nuovoBiglietto = new Biglietto(puntoEmissione);
+        }
+        this.save(nuovoBiglietto);
     }
 
-    public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
+
+   /* public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
         if (!puntoEmissione.isAttivo())
             throw new PuntoDiEmissioneNonAttivoException();
         if (tessera.getDataScadenza().isBefore(LocalDate.now()))
             throw new TesseraScadutaException();
         else {
             Emissione nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
+            this.save(nuovoAbbonamento);
+        }
+    }*/
+
+    public void acquistaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera, TipoAbbonamento tipo) {
+        Emissione nuovoAbbonamento;
+        if (puntoEmissione instanceof DistributoriAutomatici) {
+            DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
+            if (!distributore.isAttivo())
+                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+            else {
+                nuovoAbbonamento = new Abbonamento(distributore, tessera, tipo);
+            }
+        } else {
+            nuovoAbbonamento = new Abbonamento(puntoEmissione, tessera, tipo);
+        }
+
+        if (tessera.getDataScadenza().isBefore(LocalDate.now()))
+            throw new RuntimeException("Impossibile acquistare l'abbonamento, tessera scaduta il " + tessera.getDataScadenza());
+        else {
             this.save(nuovoAbbonamento);
         }
     }
@@ -342,9 +379,9 @@ public class EmissioniDAO {
         if (quando.equals("prima")) {
             query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione < :data AND b.puntiEmissione.id = :idPunto", Long.class);
         } else if (quando.equals("dopo")) {
-            query = entityManager.createQuery("SELECT bCOUNT(b) FROM Biglietto b WHERE b.dataEmissione > :data AND b.puntiEmissione.id = :idPunto", Long.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione > :data AND b.puntiEmissione.id = :idPunto", Long.class);
         } else {
-            query = entityManager.createQuery("SELECT bCOUNT(b) FROM Biglietto b WHERE b.dataEmissione = :data AND b.puntiEmissione.id = :idPunto", Long.class);
+            query = entityManager.createQuery("SELECT COUNT(b) FROM Biglietto b WHERE b.dataEmissione = :data AND b.puntiEmissione.id = :idPunto", Long.class);
         }
         query.setParameter("data", data);
         query.setParameter("idPunto", idPunto);

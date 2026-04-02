@@ -1,5 +1,6 @@
 package GiorgiaFormicola.dao;
 
+import GiorgiaFormicola.entities.DistributoriAutomatici;
 import GiorgiaFormicola.entities.PuntiEmissione;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
@@ -62,15 +63,22 @@ public class PuntiEmissioneDAO {
             throw new NotFoundException(id);
         }
 
-        boolean statoPrecedente = found.isAttivo();
+        if (!(found instanceof DistributoriAutomatici)){
+            System.out.println("Il punto di emissione non è un distributore automatico");
+            return;
+        }
+
+        DistributoriAutomatici distributore = (DistributoriAutomatici) found;
+
+        boolean statoPrecedente = distributore.isAttivo();
 
         transaction.begin();
 
-        found.setAttivo(!statoPrecedente);
+        distributore.setAttivo(!statoPrecedente);
 
         transaction.commit();
 
-        System.out.println("Lo stato del punto di emissione con id " + id + " è stato cambiato da " + statoPrecedente + " a " + found.isAttivo());
+        System.out.println("Lo stato del distributore automatico con id " + id + " è stato cambiato da " + statoPrecedente + " a " + distributore.isAttivo());
     }
 
     public List<PuntiEmissione> findPuntiEmissioneAttivi() {
