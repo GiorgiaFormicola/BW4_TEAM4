@@ -79,10 +79,16 @@ public class InserimentoDatiNelDb {
         PuntiEmissione puntoEmissioneDB = puntiEmissioneDAO.getPuntoEmissioneById("559d2102-ae07-45f2-b62e-bfcb8eca48fe");
 //        PuntiEmissione puntoEmissioneDB2 = puntiEmissioneDAO.getPuntoEmissioneById(UUID.fromString("5ac5fea5-ad48-4895-a917-7c75634d91a5"));
 
-        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById("25dab02d-f0aa-4f87-bdfd-2134dafd9302");
+//        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById("25dab02d-f0aa-4f87-bdfd-2134dafd9302");
 //        puntiEmissioneDAO.savePuntoEmissione(distributoriAutomatici);
 //        puntiEmissioneDAO.savePuntoEmissione(rivenditoriAutorizzati);
 
+        //        -------------------- MEZZI DI TRASPORTO --------------------
+        MezziDiTrasportoDAO mezziDiTrasportoDAO = new MezziDiTrasportoDAO(entityManager);
+//        mezziDiTrasportoDAO.addMezzo("tram");
+//        mezziDiTrasportoDAO.addMezzo("autobus");
+//        mezziDiTrasportoDAO.addMezzo("autobus");
+//        mezziDiTrasportoDAO.addMezzo("tram");
 
 //        -------------------- EMISSIONI --------------------
         EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
@@ -91,19 +97,18 @@ public class InserimentoDatiNelDb {
 //        Emissione abbonamento3 = new Abbonamento(puntoEmissioneDB, tesseraDB, TipoAbbonamento.MENSILE);
 
         Biglietto biglietto = new Biglietto(puntoEmissioneDB);
+        Biglietto bigliettoFromDB = emissioniDAO.findBigliettoById("83a0ba02-74b0-489d-9adf-cdc972c44f88");
+        MezzoDiTrasporto mezzoDiTrasportoFromDB = mezziDiTrasportoDAO.findById("3d8d21a3-e6a1-49d9-a37b-b183ef2205e7");
 
-        try {
-            emissioniDAO.save(biglietto);
-        }catch (NotFoundException e){
-            System.out.println(e.getMessage());
-        }
+        emissioniDAO.utilizzaBiglietto(bigliettoFromDB, mezzoDiTrasportoFromDB);
 
-//        -------------------- MEZZI DI TRASPORTO --------------------
-        MezziDiTrasportoDAO mezziDiTrasportoDAO = new MezziDiTrasportoDAO(entityManager);
-//        mezziDiTrasportoDAO.addMezzo("tram");
-//        mezziDiTrasportoDAO.addMezzo("autobus");
-//        mezziDiTrasportoDAO.addMezzo("autobus");
-//        mezziDiTrasportoDAO.addMezzo("tram");
+//        try {
+//            emissioniDAO.save(biglietto);
+//        }catch (NotFoundException e){
+//            System.out.println(e.getMessage());
+//        }
+
+
 
 //        -------------------- TRATTA --------------------
         TrattaDAO trattaDAO = new TrattaDAO(entityManager);

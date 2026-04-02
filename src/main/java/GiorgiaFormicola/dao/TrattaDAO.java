@@ -65,7 +65,7 @@ public class TrattaDAO {
         }
     }
 
-    public Tratta getTrattaById(UUID trattaId){
+    public Tratta getTrattaById(String trattaId){
         Tratta found = em.find(Tratta.class, trattaId);
         if (found == null){
             throw new NotFoundException(trattaId);
