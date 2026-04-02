@@ -2,6 +2,7 @@ package GiorgiaFormicola;
 
 import GiorgiaFormicola.dao.*;
 import GiorgiaFormicola.entities.*;
+import GiorgiaFormicola.enums.TipoAbbonamento;
 import GiorgiaFormicola.enums.TipoDiUtente;
 import GiorgiaFormicola.exceptions.NotFoundException;
 import GiorgiaFormicola.exceptions.TesseraGiaEsistente;
@@ -61,6 +62,8 @@ public class InserimentoDatiNelDb {
 //        Tessera tesseraDB = tessereDAO.findTesseraById(UUID.fromString("3f8c12d0-e4c2-4fd0-9390-d814fbb31b61"));
 //        Tessera tesseraDB2 = tessereDAO.findTesseraById(UUID.fromString("b441de56-1ede-443b-825c-88e99f735e9a"));
 
+        tessereDAO.modificaScadenzaTessera(1);
+
         try {
 //        tessereDAO.createNuovaTessera(1, utenteFromDB);
 //        tessereDAO.createNuovaTessera(2, utenteFromDB2);
@@ -77,6 +80,7 @@ public class InserimentoDatiNelDb {
         PuntiEmissione distributoreAutomatico2 = new DistributoriAutomatici(true);
 
         PuntiEmissione puntoEmissioneDB = puntiEmissioneDAO.getPuntoEmissioneById("559d2102-ae07-45f2-b62e-bfcb8eca48fe");
+        PuntiEmissione puntoEmissioneDB2 = puntiEmissioneDAO.getPuntoEmissioneById("5ac5fea5-ad48-4895-a917-7c75634d91a5");
 //        PuntiEmissione puntoEmissioneDB2 = puntiEmissioneDAO.getPuntoEmissioneById(UUID.fromString("5ac5fea5-ad48-4895-a917-7c75634d91a5"));
 
 //        PuntiEmissione puntoEmissioneDb = puntiEmissioneDAO.getPuntoEmissioneById("25dab02d-f0aa-4f87-bdfd-2134dafd9302");
@@ -94,16 +98,21 @@ public class InserimentoDatiNelDb {
         EmissioniDAO emissioniDAO = new EmissioniDAO(entityManager);
 //        Emissione abbonamento = new Abbonamento(puntoEmissioneDB, tesseraDB, TipoAbbonamento.SETTIMANALE);
 //        Emissione abbonamento2 = new Abbonamento(puntoEmissioneDB2, tesseraDB2, TipoAbbonamento.MENSILE);
-//        Emissione abbonamento3 = new Abbonamento(puntoEmissioneDB, tesseraDB, TipoAbbonamento.MENSILE);
 
         Biglietto biglietto = new Biglietto(puntoEmissioneDB);
+        Biglietto biglietto2 = new Biglietto(puntoEmissioneDB2);
+
         Biglietto bigliettoFromDB = emissioniDAO.findBigliettoById("83a0ba02-74b0-489d-9adf-cdc972c44f88");
         MezzoDiTrasporto mezzoDiTrasportoFromDB = mezziDiTrasportoDAO.findById("3d8d21a3-e6a1-49d9-a37b-b183ef2205e7");
 
-        emissioniDAO.utilizzaBiglietto(bigliettoFromDB, mezzoDiTrasportoFromDB);
+        Biglietto bigliettoFromDB2 = emissioniDAO.findBigliettoById("53c974e6-6830-418e-8e41-beac4493063b");
+        MezzoDiTrasporto mezzoDiTrasportoFromDB2 = mezziDiTrasportoDAO.findById("42cd0f7f-d76f-446f-b780-570d4947d052");
+
+//        emissioniDAO.utilizzaBiglietto(bigliettoFromDB, mezzoDiTrasportoFromDB);
+//        emissioniDAO.utilizzaBiglietto(bigliettoFromDB2, mezzoDiTrasportoFromDB2);
 
 //        try {
-//            emissioniDAO.save(biglietto);
+//            emissioniDAO.save(biglietto2);
 //        }catch (NotFoundException e){
 //            System.out.println(e.getMessage());
 //        }

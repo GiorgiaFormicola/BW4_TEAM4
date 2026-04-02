@@ -58,7 +58,7 @@ public class EmissioniDAO {
         if (puntoEmissione instanceof DistributoriAutomatici) {
             DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
             if (!distributore.isAttivo())
-                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+                throw new PuntoDiEmissioneNonAttivoException();
             else {
                 nuovoBiglietto = new Biglietto(distributore);
             }
@@ -85,7 +85,7 @@ public class EmissioniDAO {
         if (puntoEmissione instanceof DistributoriAutomatici) {
             DistributoriAutomatici distributore = (DistributoriAutomatici) puntoEmissione;
             if (!distributore.isAttivo())
-                throw new RuntimeException("Impossibile acquistare il biglietto, distributore automatico non in funzione");
+                throw new PuntoDiEmissioneNonAttivoException();
             else {
                 nuovoAbbonamento = new Abbonamento(distributore, tessera, tipo);
             }
@@ -94,7 +94,7 @@ public class EmissioniDAO {
         }
 
         if (tessera.getDataScadenza().isBefore(LocalDate.now()))
-            throw new RuntimeException("Impossibile acquistare l'abbonamento, tessera scaduta il " + tessera.getDataScadenza());
+            throw new TesseraScadutaException();
         else {
             this.save(nuovoAbbonamento);
         }
