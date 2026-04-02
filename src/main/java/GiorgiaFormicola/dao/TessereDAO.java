@@ -60,8 +60,7 @@ public class TessereDAO {
         List<Tessera> risultatoLista = query.getResultList();
 
         if (risultatoLista.isEmpty()) {
-            System.out.println("Nessuna tessera trovata con numero tessera " + numeroTessera);
-            return null;
+            throw new NotFoundException(String.valueOf(numeroTessera));
         } else {
             System.out.println("Tessera trovata con numero " + numeroTessera + ": ");
             risultatoLista.forEach(tessera -> System.out.println(tessera));
@@ -234,6 +233,25 @@ public class TessereDAO {
         transaction.commit();
 
         System.out.println("Tessera rinnovata! Nuova scadenza: " + tessera.getDataScadenza());
+    }
+
+    public void modificaScadenzaTessera(long numeroTessera){
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            Tessera tessera = this.findTesseraByNumeroTessera(numeroTessera);
+
+            transaction.begin();
+
+            tessera.setDataEmissione(LocalDate.now().minusYears(2));
+            tessera.setDataScadenza(LocalDate.now().minusYears(1));
+
+            transaction.commit();
+
+            System.out.println("La data di scadenza è stata modificata con successo");
+        } catch (NotFoundException e){
+            System.err.println(e.getMessage());
+        }
     }
 
     public void checkScadenzaTessera(long numeroTessera) {
