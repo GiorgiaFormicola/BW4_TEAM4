@@ -29,10 +29,11 @@ public class Tessera {
     protected Tessera() {
     }
 
-    public Tessera(Long numeroTessera) {
+    public Tessera(Long numeroTessera, Utente utente) {
         this.numeroTessera = numeroTessera;
         this.dataEmissione = LocalDate.now();
         this.dataScadenza = LocalDate.now().plusYears(1);
+        this.utente = utente;
     }
 
     public Long getNumeroTessera() {
@@ -49,6 +50,10 @@ public class Tessera {
 
     public Utente getUtente() {
         return utente;
+    }
+
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
 
  /* public String getCodiceFiscale() {
