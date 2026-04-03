@@ -177,7 +177,7 @@ public class TestPerScanner {
         //GESTIONE PORTALE + PERSONA NON REGISTRATA
         //TODO: CODICE FISCALE NON VALIDO ciao
         //TODO: CODICE FISCALE GIA' REGISTRATO PLZCRL66R45G273W
-        //TODO: CODICE FISCALE VALIDO ABZCRL66R45G273T
+        //TODO: CODICE FISCALE VALIDO AKFDRL66R45G273T
         if (tipoUtente == 1 && simulazione == 3) {
             while (true) {
                 int operazione;
@@ -209,20 +209,22 @@ public class TestPerScanner {
 
         //GESTIONE PUNTO DI EMISSIONE E UTENTE
         //TODO: DISTIBUTORE ATTIVO 5e6d6394-2e6b-441e-a693-fceb7e967fa3
-        //TODO: UTENTE CON ABBONAMENTO NON SCADUTO f06239cb-7507-42a1-85d3-cf19d74d385f TESSERA 4
+        //TODO: TESSERA SENZA ABBONAMENTO 5
+        //TODO: TESSERA CON ABBONAMENTO NON SCADUTO f06239cb-7507-42a1-85d3-cf19d74d385f TESSERA 4
         //TODO: UTENTE CON ABBONAMENTO SCADUTO 9b4787b3-4520-46e9-bd9e-6c0ab879e20a TESSERA 3
         if (tipoUtente == 2 && simulazione == 1) {
             while (true) {
                 int operazione;
                 System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
                 System.out.println("1.Acquista abbonamento");
-                System.out.println("2.Rinnova abbonamento");
-                System.out.println("3.Modifica e rinnova abbonamento");
+                /*System.out.println("2.Rinnova abbonamento");
+                System.out.println("3.Modifica e rinnova abbonamento");*/
                 System.out.println("0.ESCI DALLA SIMULAZIONE");
                 try {
                     operazione = Integer.parseInt(scanner.nextLine());
                     if (operazione == 0) break;
-                    if (operazione < 1 || operazione > 3)
+                    if (operazione != 1)
+                        /*if (operazione < 1 || operazione > 3)*/
                         System.err.println("\nERRORE: Operazione selezionata non valida, riprovare!\n");
                     else {
                         System.out.println("\nInserire l'id del punto di emissione in cui ti trovi");
@@ -372,7 +374,7 @@ public class TestPerScanner {
                             tessereDAO.rinnovaTessera(tesseraUtente.getNumeroTessera());
                         } catch (TesseraAncoraValidaException | NullPointerException e) {
                             if (e instanceof NullPointerException)
-                                System.err.println("Impossibile rinnovare la tessera, utente non associato ad alcuna tessera");
+                                System.err.println("Utente non associato ad alcuna tessera");
                             else System.err.println("ERRORE: " + e.getMessage());
                         }
                     }
@@ -385,7 +387,7 @@ public class TestPerScanner {
                             else
                                 System.out.println("Tessera in corso di validità. Scadenza prevista in data " + utente.getTessera().getDataScadenza());
                         } catch (NullPointerException e) {
-                            System.err.println("Impossibile rinnovare la tessera, utente non associato ad alcuna tessera");
+                            System.err.println("Utente non associato ad alcuna tessera");
                         }
 
                     }
@@ -397,7 +399,7 @@ public class TestPerScanner {
                         } catch (TesseraScadutaException | AbbonamentoTesseraNonTrovatoException |
                                  NullPointerException e) {
                             if (e instanceof NullPointerException)
-                                System.err.println("Impossibile rinnovare la tessera, utente non associato ad alcuna tessera");
+                                System.err.println("Utente non associato ad alcuna tessera");
                             else System.err.println("ERRORE: " + e.getMessage());
                         }
                     }
@@ -601,15 +603,15 @@ public class TestPerScanner {
                                 if (operazione == 1) {
                                     while (true) {
                                         System.out.println("\nChe tipo di emissione vuoi verificare?");
-                                        System.out.println("1.Tutte");
-                                        System.out.println("2.Solo biglietti");
-                                        System.out.println("3.Solo abbonamenti");
+                                        /*System.out.println("1.Tutte");*/
+                                        System.out.println("1.Solo biglietti");
+                                        System.out.println("2.Solo abbonamenti");
                                         System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
                                         int tipoEmissione;
                                         try {
                                             tipoEmissione = Integer.parseInt(scanner.nextLine());
                                             if (tipoEmissione == 0) break;
-                                            if (tipoEmissione < 1 || tipoEmissione > 3)
+                                            if (tipoEmissione < 1 || tipoEmissione > 2)
                                                 System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
                                             else {
                                                 System.out.println("\nChe periodo vuoi verificare?");
@@ -624,7 +626,7 @@ public class TestPerScanner {
                                                 if (periodo < 1 || periodo > 4)
                                                     System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
                                                 else {
-                                                    if (tipoEmissione == 1) {
+                                                    /*if (tipoEmissione == 1) {
                                                         if (periodo == 4)
                                                             System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
                                                         System.out.println("\nInserire l'anno desiderato:");
@@ -651,7 +653,8 @@ public class TestPerScanner {
                                                             LocalDate dataFine = LocalDate.of(anno2, mese2, giorno2);
                                                             System.out.println("EMISSIONI TRA IL " + dataInizio + " ED IL " + dataFine + " : " + emissioniDAO.getTotaleEmissioniInArcoTemporale(dataInizio, dataFine));
                                                         }
-                                                    } else if (tipoEmissione == 2) {
+                                                    } else*/
+                                                    if (tipoEmissione == 1) {
                                                         if (periodo == 4)
                                                             System.out.println("\nINSERIRE LA DATA DI INIZIO DEL PERIODO DESIDERATO");
                                                         System.out.println("\n Inserire l'anno desiderato:");
@@ -726,24 +729,25 @@ public class TestPerScanner {
                                     while (true) {
                                         try {
                                             System.out.println("\nChe tipo di emissione vuoi verificare?");
-                                            System.out.println("1.Tutte");
-                                            System.out.println("2.Solo biglietti");
-                                            System.out.println("3.Solo abbonamenti");
+                                            /*System.out.println("1.Tutte");*/
+                                            System.out.println("1.Solo biglietti");
+                                            System.out.println("2.Solo abbonamenti");
                                             System.out.println("0.CAMBIA IL TIPO DI OPERAZIONE DA SVOLGERE");
                                             int tipoEmissione = Integer.parseInt(scanner.nextLine());
                                             if (tipoEmissione == 0) break;
-                                            if (tipoEmissione < 1 || tipoEmissione > 3)
+                                            if (tipoEmissione < 1 || tipoEmissione > 2)
                                                 System.err.println("\nERRORE: Tipo selezionato non valido, riprovare!\n");
                                             else {
                                                 System.out.println("\nInserisci l'id del punto di emissione da verificare");
                                                 String idPunto = scanner.nextLine();
                                                 puntiDAO.getPuntoEmissioneById(idPunto);
-                                                if (tipoEmissione == 1) {
+                                               /* if (tipoEmissione == 1) {
                                                     System.out.println("TOTALE DELLE EMISSIONI AVVENUTE DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
-                                                } else if (tipoEmissione == 2) {
-                                                    System.out.println("TOTALE DEI BIGLIETTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
+                                                } else*/
+                                                if (tipoEmissione == 1) {
+                                                    System.out.println("TOTALE DEI BIGLIETTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleBigliettiDaPuntoDiEmissione(idPunto));
                                                 } else {
-                                                    System.out.println("TOTALE DEGLI ABBONAMENTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleEmissioniDaPuntoDiEmissione(idPunto));
+                                                    System.out.println("TOTALE DEGLI ABBONAMENTI EMESSI DAL PUNTO CON ID " + idPunto + " : " + emissioniDAO.getTotaleAbbonamentiDaPuntoDiEmissione(idPunto));
                                                 }
                                             }
                                         } catch (NessunElementoTrovatoException | NotFoundException |
@@ -768,7 +772,6 @@ public class TestPerScanner {
                                 //TODO: fino ad oggi
                                 if (operazione == 3) {
                                     while (true) {
-
                                         try {
                                             System.out.println("\nChe periodo vuoi verificare?");
                                             System.out.println("1.In una specifica data");

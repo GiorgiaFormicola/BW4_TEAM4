@@ -126,26 +126,48 @@ public class EmissioniDAO {
         }
     }
 
-    public void rinnovaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+   /* public void rinnovaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+        EntityTransaction transaction = entityManager.getTransaction();
         Abbonamento abbonamentoDaRinnovare = this.ottieniUltimoAbbonamentoInBaseATessera(tessera);
         if (abbonamentoDaRinnovare.getDataScadenza().isAfter(LocalDate.now()))
             throw new AbbonamentoAncoraValidoException();
         else {
+            transaction.begin();
             this.acquistaAbbonamento(puntoEmissione, tessera, abbonamentoDaRinnovare.getTipo());
+            transaction.commit();
+            System.out.println("Abbonamento rinnovato con successo!");
         }
-        System.out.println("Abbonamento rinnovato con successo!");
+    }*/
+
+    public void rinnovaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        if (this.controllaValiditàAbbonamento(tessera)) throw new AbbonamentoAncoraValidoException();
+        else {
+            TypedQuery<Abbonamento> query = entityManager.createQuery("SELECT a FROM Abbonamento a WHERE a.tessera.id = :idTessera ORDER BY a.dataEmissione DESC", Abbonamento.class);
+            query.setParameter("idTessera", tessera.getId());
+            query.setMaxResults(1);
+            List<Abbonamento> found = query.getResultList();
+            Abbonamento abbonamentoUtente = found.getFirst();
+            transaction.begin();
+            this.acquistaAbbonamento(puntoEmissione, tessera, abbonamentoUtente.getTipo());
+            transaction.commit();
+            System.out.println("Abbonamento rinnovato con successo!");
+        }
     }
 
     public void rinnovaEModificaAbbonamento(PuntiEmissione puntoEmissione, Tessera tessera) {
+        EntityTransaction transaction = entityManager.getTransaction();
         Abbonamento abbonamentoDaModificare = this.ottieniUltimoAbbonamentoInBaseATessera(tessera);
         if (abbonamentoDaModificare.getDataScadenza().isAfter(LocalDate.now()))
             throw new AbbonamentoAncoraValidoException();
         else {
+            transaction.begin();
             if (abbonamentoDaModificare.getTipo().equals(TipoAbbonamento.MENSILE))
                 this.acquistaAbbonamento(puntoEmissione, tessera, TipoAbbonamento.SETTIMANALE);
             else this.acquistaAbbonamento(puntoEmissione, tessera, TipoAbbonamento.MENSILE);
+            transaction.commit();
+            System.out.println("Abbonamento modificato e rinnovato con successo!");
         }
-        System.out.println("Abbonamento modificato e rinnovato con successo!");
     }
 
     public void utilizzaAbbonamento(Tessera tessera, MezzoDiTrasporto mezzo) {
