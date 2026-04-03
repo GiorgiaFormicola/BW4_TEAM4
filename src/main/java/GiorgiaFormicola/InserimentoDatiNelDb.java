@@ -31,6 +31,8 @@ public class InserimentoDatiNelDb {
         Utente utente6 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "ABCCRL66R45G272H");
         Utente utente7 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "CFGCRL66R45G272I");
         Utente utente8 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "OPDCRL66R45G272D");
+        Utente utente9 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "FUVCRL66R45G272H");
+        Utente utente10 = new Utente(TipoDiUtente.UTENTE_SEMPLICE, "LDMCRL66R45G272P");
 
         try {
             utenteDAO.save(utente1);
@@ -41,6 +43,8 @@ public class InserimentoDatiNelDb {
             utenteDAO.save(utente6);
             utenteDAO.save(utente7);
             utenteDAO.save(utente8);
+            utenteDAO.save(utente9);
+            utenteDAO.save(utente10);
         } catch (UtenteGiàPresenteNelDBException e) {
             System.out.println(e.getMessage());
         }
@@ -50,9 +54,13 @@ public class InserimentoDatiNelDb {
         Utente utenteConTesseraScadutaFromDB1 = utenteDAO.findByCodiceFiscale("PLZCRL66R45G273W");
         Utente utenteConTesseraScadutaFromDB2 = utenteDAO.findByCodiceFiscale("ABCCRL66R45G272H");
 
-        //UTENTI CON TESSERA VALIDA
+        //UTENTI CON TESSERA VALIDA CON ABBONAMENTO
         Utente utenteConTesseraValidaFromDB3 = utenteDAO.findByCodiceFiscale("MNTFRC01L10D325Q");
         Utente utenteConTesseraValidaFromDB4 = utenteDAO.findByCodiceFiscale("RSSMRA85M01H501Z");
+
+        //UTENTI CON TESSERA VALIDA SENZA ABBONAMENTO
+        Utente utenteConTesseraValidaFromDB5 = utenteDAO.findByCodiceFiscale("FUVCRL66R45G272H");
+        Utente utenteConTesseraValidaFromDB6 = utenteDAO.findByCodiceFiscale("LDMCRL66R45G272P");
 
         //UTENTI SENZA TESSERA
         Utente utenteSenzaTesseraFromDB1 = utenteDAO.findByCodiceFiscale("CFGCRL66R45G272I");
@@ -60,7 +68,7 @@ public class InserimentoDatiNelDb {
 
         //AMMINISTRATORI
         Utente amministratoreFromDB1 = utenteDAO.findByCodiceFiscale("BNCGPP92C15F839K");
-        Utente amministratoreFromDB2 = utenteDAO.findByCodiceFiscale("BNCGPP92C15F839K");
+        Utente amministratoreFromDB2 = utenteDAO.findByCodiceFiscale("VRDLGI78T22A662X");
 
         //-------------------- TESSERE --------------------
         TessereDAO tessereDAO = new TessereDAO(entityManager);
@@ -70,9 +78,12 @@ public class InserimentoDatiNelDb {
             tessereDAO.createNuovaTessera(2, utenteConTesseraScadutaFromDB2);
             tessereDAO.createNuovaTessera(3, utenteConTesseraValidaFromDB3);
             tessereDAO.createNuovaTessera(4, utenteConTesseraValidaFromDB4);
+            tessereDAO.createNuovaTessera(5, utenteConTesseraValidaFromDB5);
+            tessereDAO.createNuovaTessera(6, utenteConTesseraValidaFromDB6);
         } catch (UtenteAssociatoATessera e) {
             System.out.println(e.getMessage());
         }
+
 
         /*Tessera tesseraFromDB1 = tessereDAO.findTesseraByNumeroTessera(1);
         Tessera tesseraFromDB2 = tessereDAO.findTesseraByNumeroTessera(2);*/
@@ -80,11 +91,17 @@ public class InserimentoDatiNelDb {
         /*tessereDAO.modificaScadenzaTessera(1);
         tessereDAO.modificaScadenzaTessera(2);*/
 
+        //TESSERE SCADUTE
         Tessera tesseraScadutaFromDB1 = tessereDAO.findTesseraByNumeroTessera(1);
         Tessera tesseraScadutaFromDB2 = tessereDAO.findTesseraByNumeroTessera(2);
-        Tessera tesseraValidaFromDB1 = tessereDAO.findTesseraByNumeroTessera(3);
-        Tessera tesseraValidaFromDB2 = tessereDAO.findTesseraByNumeroTessera(4);
 
+        //TESSERE VALIDE CON ABBONAMENTO
+        Tessera tesseraValidaConAbbonamentoValidoFromDB1 = tessereDAO.findTesseraByNumeroTessera(3);
+        Tessera tesseraValidaConAbbonamentoScadutoFromDB2 = tessereDAO.findTesseraByNumeroTessera(4);
+
+        //TESSERE VALIDE SENZA ABBONAMENTO
+        Tessera tesseraValidaSenzaAbbonamentoFromDB1 = tessereDAO.findTesseraByNumeroTessera(5);
+        Tessera tesseraValidaSenzaAbbonamentoFromDB2 = tessereDAO.findTesseraByNumeroTessera(6);
 
         //-------------------- PUNTI EMISSIONE --------------------
         PuntiEmissioneDAO puntiEmissioneDAO = new PuntiEmissioneDAO(entityManager);

@@ -27,7 +27,7 @@ public class TessereDAO {
             transaction.begin();
             entityManager.persist(nuovaTessera);
             transaction.commit();
-            System.out.println("La tessera con numero" + nuovaTessera.getNumeroTessera() + " è stata create con successo! Scadenza prevista in data " + nuovaTessera.getDataScadenza());
+            System.out.println("La tessera con numero " + nuovaTessera.getNumeroTessera() + " è stata create con successo! Scadenza prevista in data " + nuovaTessera.getDataScadenza());
         } catch (TesseraGiaEsistente e) {
             System.err.println("ERRORE: impossibile creare una nuova tessera. " + e.getMessage());
         }

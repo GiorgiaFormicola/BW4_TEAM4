@@ -68,7 +68,7 @@ public class PuntiEmissioneDAO {
                 transaction.begin();
                 distributore.setAttivo(!statoPrecedente);
                 transaction.commit();
-                System.out.println("Stato del distributore automatico con id " + idDistributore + " modificato con successo.");
+                System.out.println("\nStato del distributore automatico con id " + idDistributore + " modificato con successo.");
             }
         } catch (NotFoundException e) {
             System.err.println("ERRORE: " + e.getMessage());

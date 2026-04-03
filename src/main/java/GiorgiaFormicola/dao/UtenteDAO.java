@@ -22,7 +22,7 @@ public class UtenteDAO {
             t.begin();
             em.persist(u);
             t.commit();
-            System.out.println("Utente con codice fiscale " + u.getCodiceFiscale() + " registrato al portale con successo!");
+            System.out.println("\nUtente con codice fiscale " + u.getCodiceFiscale() + " registrato al portale con successo!");
         } catch (Exception e) {
            /* if (t.isActive()) t.rollback();
             System.err.println("ERRORE: Impossibile creare l'utente. Questo codice fiscale già esiste.");*/
