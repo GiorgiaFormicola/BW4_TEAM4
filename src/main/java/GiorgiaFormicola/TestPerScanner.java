@@ -102,7 +102,7 @@ public class TestPerScanner {
         if (tipoUtente == 1 && simulazione == 1) {
             while (true) {
                 int operazione;
-                System.out.println("SCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
+                System.out.println("\nSCEGLIERE IL TIPO DI OPERAZIONE DA EFFETTUARE DIGITANDO IL RISPETTIVO NUMERO");
                 System.out.println("1.Acquista biglietto");
                 System.out.println("0.ESCI DALLA SIMULAZIONE");
                 try {
@@ -117,6 +117,7 @@ public class TestPerScanner {
                         try {
                             puntoEmissione = puntiDAO.getPuntoEmissioneById(idPuntoEmissione);
                             emissioniDAO.acquistaBiglietto(puntoEmissione);
+                            System.out.println("Biglietto acquistato con successo!");
                         } catch (NotFoundException | IllegalArgumentException | PuntoDiEmissioneNonAttivoException e) {
                             if (e instanceof IllegalArgumentException)
                                 System.err.println("\nERRORE: Formato ID non valido\n");

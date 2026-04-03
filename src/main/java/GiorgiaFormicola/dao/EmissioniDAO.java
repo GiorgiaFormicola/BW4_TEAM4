@@ -212,15 +212,19 @@ public class EmissioniDAO {
     public void utilizzaBiglietto(Biglietto biglietto, MezzoDiTrasporto mezzo) {
         if (biglietto.getDataVidimazione() != null)
             throw new BigliettoGiàVidimatoException();
-        if (mezzo.getBigliettiValidati().size() == mezzo.getCapienza())
+        if (mezzo.getBigliettiValidati().size() >= mezzo.getCapienza())
             throw new CapienzaMassimaRaggiuntaException();
         else {
-            Query updateQuery = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = CURRENT_DATE, b.mezzo = :mezzo  WHERE b.id = :idBiglietto ");
+            Query updateQuery = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = CURRENT_DATE, b.mezzo = :mezzo  WHERE b.id = :idBiglietto AND b.dataVidimazione IS NULL ");
             updateQuery.setParameter("mezzo", mezzo);
             updateQuery.setParameter("idBiglietto", biglietto.getId());
             EntityTransaction transaction = entityManager.getTransaction();
             transaction.begin();
-            updateQuery.executeUpdate();
+            int update = updateQuery.executeUpdate();
+            if (update == 0) {
+                transaction.rollback();
+                throw new BigliettoGiàVidimatoException();
+            }
             transaction.commit();
             System.out.println("\nBiglietto vidimato con successo, salire a bordo!");
         }
