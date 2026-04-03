@@ -102,6 +102,6 @@ public class TrattaMezzoDAO {
         transaction.commit();
         if (update == 0)
             System.err.println("ERRORE: impossibile aggiornare la percorrenza, percorrenza della tratta già aggiornata");
-        else System.out.println("Percorrenza effettiva della tratta effettuata aggiornata con successo");
+        else System.out.println("Percorrenza effettiva della tratta assegnata aggiornata con successo!");
     }
 }

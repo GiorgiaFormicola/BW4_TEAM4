@@ -39,6 +39,12 @@ public abstract class Emissione {
         return dataEmissione;
     }
 
+    public void setDataEmissione(LocalDate dataEmissione) {
+        this.dataEmissione = dataEmissione;
+    }
+
+    //SETTERS
+
     public PuntiEmissione getPuntiEmissione() {
         return puntiEmissione;
     }

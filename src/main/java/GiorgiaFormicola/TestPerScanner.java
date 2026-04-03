@@ -133,7 +133,6 @@ public class TestPerScanner {
 
         //GESTIONE MEZZO DI TRAPORTO + PERSONA NON REGISTRATA
         //TODO: check eccezione capienza massima raggiunta
-        //TODO: aggiustare doppia vidimazione valida nella stessa simulazione
         if (tipoUtente == 1 && simulazione == 2) {
             while (true) {
                 int operazione;

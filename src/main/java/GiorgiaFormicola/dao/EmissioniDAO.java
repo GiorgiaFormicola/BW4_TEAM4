@@ -530,5 +530,35 @@ public class EmissioniDAO {
         else return found;
     }
 
+    public void cambiaDataVidimazioneBiglietto(Biglietto biglietto, LocalDate data) {
+       /* Query query = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = :data WHERE b.id = :idBiglietto AND b.dataVidimazione IS NOT NULL");
+        query.setParameter("data", data);
+        query.setParameter("idBiglietto", biglietto.getId());*/
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        biglietto.setDataVidimazione(data);
+        transaction.commit();
+    }
+
+    public void setDataVidimazioneANull(Biglietto biglietto) {
+       /* Query query = entityManager.createQuery("UPDATE Biglietto b SET b.dataVidimazione = :data WHERE b.id = :idBiglietto AND b.dataVidimazione IS NOT NULL");
+        query.setParameter("data", data);
+        query.setParameter("idBiglietto", biglietto.getId());*/
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        biglietto.setDataVidimazione(null);
+        transaction.commit();
+    }
+
+    public void cambiaDataEmissioneEScadenzaAbbonamentoSettimanale(Emissione abbonamento) {
+        if (abbonamento instanceof Abbonamento) {
+            Abbonamento castAbbonamento = (Abbonamento) abbonamento;
+            EntityTransaction transaction = entityManager.getTransaction();
+            transaction.begin();
+            castAbbonamento.setDataEmissione(LocalDate.now().minusWeeks(2));
+            castAbbonamento.setDataScadenza(LocalDate.now().minusWeeks(1));
+            transaction.commit();
+        }
+    }
 
 }

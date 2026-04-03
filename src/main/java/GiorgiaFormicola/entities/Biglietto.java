@@ -30,6 +30,11 @@ public class Biglietto extends Emissione {
         return dataVidimazione;
     }
 
+    //SETTERS
+    public void setDataVidimazione(LocalDate dataVidimazione) {
+        this.dataVidimazione = dataVidimazione;
+    }
+
     public MezzoDiTrasporto getMezzo() {
         return mezzo;
     }

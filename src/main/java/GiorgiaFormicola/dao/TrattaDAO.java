@@ -51,7 +51,7 @@ public class TrattaDAO {
     public LocalTime getTempoMedioEffettivo(String trattaId) {
         Double mediaMinuti = em.createQuery(
                         "SELECT AVG(HOUR(tm.percorrenza) * 60 + MINUTE(tm.percorrenza)) " +
-                                "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId", Double.class)
+                                "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId AND tm.percorrenza IS NOT NULL", Double.class)
                 .setParameter("tId", UUID.fromString(trattaId))
                 .getSingleResult();
 
@@ -66,7 +66,7 @@ public class TrattaDAO {
     public LocalTime getTempoMedioEffettivoInBaseAMezzo(String trattaId, String mezzoId) {
         Double mediaMinuti = em.createQuery(
                         "SELECT AVG(HOUR(tm.percorrenza) * 60 + MINUTE(tm.percorrenza)) " +
-                                "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId AND tm.mezzo.id = :mezzoId", Double.class)
+                                "FROM TrattaMezzo tm WHERE tm.tratta.id = :tId AND tm.mezzo.id = :mezzoId AND tm.percorrenza IS NOT NULL", Double.class)
                 .setParameter("tId", UUID.fromString(trattaId))
                 .setParameter("mezzoId", UUID.fromString(mezzoId))
                 .getSingleResult();

@@ -27,7 +27,7 @@ public class TessereDAO {
             transaction.begin();
             entityManager.persist(nuovaTessera);
             transaction.commit();
-            System.out.println("La tessera " + nuovaTessera.getNumeroTessera() + " è stata salvata correttamente");
+            System.out.println("La tessera con numero" + nuovaTessera.getNumeroTessera() + " è stata create con successo! Scadenza prevista in data " + nuovaTessera.getDataScadenza());
         } catch (TesseraGiaEsistente e) {
             System.err.println("ERRORE: impossibile creare una nuova tessera. " + e.getMessage());
         }
@@ -210,7 +210,7 @@ public class TessereDAO {
             tessera.setDataEmissione(LocalDate.now().minusYears(2));
             tessera.setDataScadenza(LocalDate.now().minusYears(1));
             transaction.commit();
-            System.out.println("La data di scadenza è stata modificata con successo");
+            /* System.out.println("La data di scadenza è stata modificata con successo");*/
         } catch (NotFoundException e) {
             System.err.println(e.getMessage());
         }

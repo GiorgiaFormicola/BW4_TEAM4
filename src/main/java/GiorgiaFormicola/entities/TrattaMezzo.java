@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tratte_mezzi")
+@Table(name = "assegnazioni_tratte")
 public class TrattaMezzo {
     @Id
     @GeneratedValue

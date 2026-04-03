@@ -46,6 +46,12 @@ public class Abbonamento extends Emissione {
         return dataScadenza;
     }
 
+    public void setDataScadenza(LocalDate dataScadenza) {
+        this.dataScadenza = dataScadenza;
+    }
+
+    //SETTERS
+
     public Tessera getTessera() {
         return tessera;
     }

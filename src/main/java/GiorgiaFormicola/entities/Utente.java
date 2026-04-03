@@ -1,6 +1,7 @@
 package GiorgiaFormicola.entities;
 
 import GiorgiaFormicola.enums.TipoDiUtente;
+import GiorgiaFormicola.exceptions.CodiceFiscaleNonValidoException;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -28,8 +29,13 @@ public class Utente {
     }
 
     public Utente(TipoDiUtente tipo, String codiceFiscale) {
-        this.tipo = tipo;
-        this.codiceFiscale = codiceFiscale;
+        if (codiceFiscale == null || codiceFiscale.length() != 16 || !codiceFiscale.toUpperCase().matches("^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$"))
+            throw new CodiceFiscaleNonValidoException(codiceFiscale);
+        else {
+            this.tipo = tipo;
+            this.codiceFiscale = codiceFiscale.toUpperCase();
+        }
+
     }
 
     // getter e setter
